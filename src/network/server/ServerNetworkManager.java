@@ -14,7 +14,6 @@ public class ServerNetworkManager {
 	private ServerSocket serverSocket = null;
 	private ListenerThread listeningThread;
 	private BlockingQueue<Message> inMessages = null;
-	private ConcurrentMap<Integer, BlockingQueue<Message>> outMessagesMap = null;
 	private ConcurrentMap<Integer, ClientInfo> clients;
 	
 	public ServerNetworkManager(int port) throws IOException {
@@ -22,7 +21,6 @@ public class ServerNetworkManager {
 		serverSocket.setSoTimeout(2000);
 		
 		inMessages = new ArrayBlockingQueue<Message>(100);
-		outMessagesMap = new ConcurrentHashMap<Integer, BlockingQueue<Message>>();
 		clients = new ConcurrentHashMap<Integer, ClientInfo>();
 	}
 	
