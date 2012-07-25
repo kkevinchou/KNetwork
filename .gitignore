@@ -1,1 +1,8 @@
 *.class
+c
+r
+server.jar
+build.xml
+TODO.txt
+.classpath
+.project
