@@ -29,22 +29,27 @@ public class SendThread extends Thread {
 	}
 	
 	private void main() throws IOException {
+		byte[] data = null;
 		InetAddress destinationAddress = InetAddress.getByName(destinationIp);
-		ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-		byte[] data;
-        ObjectOutputStream oStream = new ObjectOutputStream(bStream);
-        DatagramPacket packet;
+        DatagramPacket packet = null;
+        ByteArrayOutputStream bStream = null;
+        ObjectOutputStream oStream = null;
+        Message message = null;
         
 		while (!finished) {
-			Message message = outMessages.poll();
+			message = outMessages.poll();
 			if (message != null) {
+				bStream = new ByteArrayOutputStream();
+		        oStream = new ObjectOutputStream(bStream);
 				oStream.writeObject(message);
+				
 		        data = bStream.toByteArray();
 		        packet = new DatagramPacket(data, data.length, destinationAddress, destinationPort);
 		        localSocket.send(packet);
+				
+				oStream.close();
 			}
 		}
-		oStream.close();
 	}
 	
 	public void terminate() {

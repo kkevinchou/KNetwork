@@ -3,11 +3,18 @@ package network.message;
 import java.io.Serializable;
 
 public abstract class Message implements Serializable {
-	public enum MessageType { RegistrationResponse, RegistrationRequest, Other };
+	private static final long serialVersionUID = -4346009386669442875L;
+
+	public enum MessageType { RegistrationResponse, RegistrationRequest, Test };
 	
-	public static long sequenceNumber = 0;
+	public static int nextSeqNumber = 0;
 	public static final int MAX_SIZE = 10000;
 	private int clientId;
+	protected int seqNumber;
+	
+	public Message() {
+		seqNumber = nextSeqNumber++;
+	}
 	
 	public int getClientId() {
 		return clientId;
@@ -16,13 +23,9 @@ public abstract class Message implements Serializable {
 	public void setClientId(int clientId) {
 		this.clientId = clientId;
 	}
-
-	protected Message() {
-		sequenceNumber++;
-	}
 	
-	public long getSequenceNumber() {
-		return sequenceNumber;
+	public int getSeqNumber() {
+		return seqNumber;
 	}
 	
 	public abstract  MessageType getMessageType();

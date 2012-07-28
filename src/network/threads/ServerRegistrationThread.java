@@ -50,13 +50,17 @@ public class ServerRegistrationThread extends Thread {
 		Message message = null;
 		
 		while (numCurrentRegistrations < numRegistrations) {
-			// Receive declarations
 			recvData = new byte[Message.MAX_SIZE];
 			recvPacket = new DatagramPacket(recvData, recvData.length);
 			localSocket.receive(recvPacket);
 			iStream = new ObjectInputStream(new ByteArrayInputStream(recvPacket.getData()));
-			message = (Message) iStream.readObject();
-        	
+			
+			try {
+				message = (Message) iStream.readObject();
+			} catch (ClassCastException e) {
+				e.printStackTrace();
+				continue;
+			}
         	if (message.getMessageType() != MessageType.RegistrationRequest) continue;
         	
     		// Receive Request
@@ -81,11 +85,11 @@ public class ServerRegistrationThread extends Thread {
     		nextClientId++;
     		
     		if (numCurrentRegistrations == 1) {
-            	System.out.println(numCurrentRegistrations + " client has registered!");
+            	System.out.print(numCurrentRegistrations + " client has registered!");
     		} else {
-            	System.out.println(numCurrentRegistrations + " clients have registered!");
+            	System.out.print(numCurrentRegistrations + " clients have registered!");
     		}
-	        System.out.println(clientAddress + " " + clientPort);
+	        System.out.println(" - " + clientAddress + " " + clientPort);
 		}
         
 		if (iStream != null) {

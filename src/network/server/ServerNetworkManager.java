@@ -30,7 +30,6 @@ public class ServerNetworkManager {
 		
 		clientSendThreads = registrationThread.getClientSendThreads();
 		startSendThreads(clientSendThreads);
-		
 		receiveThread.start();
 	}
 	
