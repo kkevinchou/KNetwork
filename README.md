@@ -1,4 +1,4 @@
 KNetwork
 ========
 
-Networking module that is intended for video game use
+Networking module intended for video game use
