@@ -15,6 +15,7 @@ public class ClientNetworkManager {
 	private ReceiveThread receiveThread;
 	private ClientRegistrationThread registrationThread;
 	private BlockingQueue<Message> inMessages;
+	private int clientId;
 	
 	public ClientNetworkManager(String serverIp, int serverPort) throws SocketException {
 		socket = new DatagramSocket();
@@ -28,13 +29,15 @@ public class ClientNetworkManager {
 	public void register() throws InterruptedException {
 		registrationThread.start();
 		registrationThread.join();
-		System.out.println("Registered with clientId = " + registrationThread.getClientId());
+		clientId = registrationThread.getClientId();
+		System.out.println("Registered with clientId = " + clientId);
 		
 		sendThread.start();
 		receiveThread.start();
 	}
 
 	public void send(Message m) throws IOException, ClassNotFoundException {
+		m.setClientId(clientId);
         sendThread.queueMessage(m);
 	}
 	

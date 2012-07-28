@@ -44,6 +44,7 @@ public class SendThread extends Thread {
 				oStream.writeObject(message);
 				
 		        data = bStream.toByteArray();
+		        System.out.println("[Send Thread] Sending " + data.length + " bytes of data");
 		        packet = new DatagramPacket(data, data.length, destinationAddress, destinationPort);
 		        localSocket.send(packet);
 				
