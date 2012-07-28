@@ -5,7 +5,7 @@ import java.io.Serializable;
 public abstract class Message implements Serializable {
 	private static final long serialVersionUID = -4346009386669442875L;
 
-	public enum MessageType { RegistrationResponse, RegistrationRequest, Test };
+	public enum MessageType { RegistrationResponse, RegistrationRequest, Big, Test };
 	
 	public static int nextSeqNumber = 0;
 	public static final int MAX_SIZE = 10000;

@@ -1,6 +1,7 @@
 package network.threads;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
@@ -39,7 +40,10 @@ public class ReceiveThread extends Thread {
 	        try {
 				message = (Message) iStream.readObject();
 			} catch (ClassCastException e) {
-				e.printStackTrace();
+				System.out.println("[Receive Thread] could not cast received object into a Message");
+				continue;
+			} catch (EOFException e) {
+				System.out.println("[Receive Thread] Could not read enough data to form an object");
 				continue;
 			}
 	        
@@ -50,10 +54,7 @@ public class ReceiveThread extends Thread {
 	        }
 	        lastSeqNumber = seqNumber;
 	        
-	        if (message.getMessageType() == MessageType.Test) {
-	        	TestMessage t = (TestMessage)message;
-		        System.out.println("[Receive Thread] Received message with sequence number = " + t.getSeqNumber());
-	        }
+	        System.out.println("[Receive Thread] Received message " + "size = " + packet.getLength() + ", sequence number = " + message.getSeqNumber());
 	        
         	iStream.close();
 		}

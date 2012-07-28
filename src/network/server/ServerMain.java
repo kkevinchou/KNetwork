@@ -18,8 +18,6 @@ public class ServerMain {
 				Message m = serverNetworkManager.recv();
 				Thread.sleep(1000);
 				if (m == null) continue;
-				
-				System.out.println(m.getSeqNumber());
 			}
 		} catch (Exception e) {
 		}

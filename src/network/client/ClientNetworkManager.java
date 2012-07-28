@@ -17,22 +17,23 @@ public class ClientNetworkManager {
 	private BlockingQueue<Message> inMessages;
 	private int clientId;
 	
-	public ClientNetworkManager(String serverIp, int serverPort) throws SocketException {
+	public ClientNetworkManager() throws SocketException {
 		socket = new DatagramSocket();
-		registrationThread = new ClientRegistrationThread(serverIp, serverPort, socket);
-		sendThread = new SendThread(serverIp, serverPort, socket);
-
 		inMessages = new ArrayBlockingQueue<Message>(100);
 		receiveThread = new ReceiveThread(socket, inMessages);
 	}
 	
-	public void register() throws InterruptedException {
+	public void register(String serverIp, int serverPort) throws InterruptedException {
+		registrationThread = new ClientRegistrationThread(serverIp, serverPort, socket);
 		registrationThread.start();
 		registrationThread.join();
+
 		clientId = registrationThread.getClientId();
 		System.out.println("Registered with clientId = " + clientId);
-		
+
+		sendThread = new SendThread(serverIp, serverPort, socket);
 		sendThread.start();
+		
 		receiveThread.start();
 	}
 
