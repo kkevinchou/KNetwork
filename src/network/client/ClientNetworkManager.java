@@ -1,51 +1,56 @@
 package network.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import network.message.*;
 import network.message.Message.MessageType;
+import network.threads.*;
 
 public class ClientNetworkManager {
+	private DatagramSocket socket;
+	private SendThread sendThread;
+	private ReceiveThread receiveThread;
+	private ClientRegistrationThread registrationThread;
+	private BlockingQueue<Message> inMessages;
 	
-	public ClientNetworkManager() {
+	public ClientNetworkManager(String serverIp, int serverPort) throws SocketException {
+		socket = new DatagramSocket();
+		registrationThread = new ClientRegistrationThread(serverIp, serverPort, socket);
+		sendThread = new SendThread(serverIp, serverPort, socket);
+
+		inMessages = new ArrayBlockingQueue<Message>(100);
+		receiveThread = new ReceiveThread(socket, inMessages);
 	}
 	
-	public void connect() throws IOException, ClassNotFoundException {
-        DatagramSocket socket = new DatagramSocket();
-        
-        ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-        ObjectOutput oo = new ObjectOutputStream(bStream); 
-        oo.writeObject(new RegistrationRequest());
-        oo.close();
+	public void register() throws InterruptedException {
+		registrationThread.start();
+		registrationThread.join();
+		System.out.println("Registered with clientId = " + registrationThread.getClientId());
+		
+		sendThread.start();
+		receiveThread.start();
+	}
 
-        byte[] data = bStream.toByteArray();
-        InetAddress address = InetAddress.getByName("192.168.203.130");
-        DatagramPacket packet = new DatagramPacket(data, data.length, address, 9001);
-        socket.send(packet);
-    
-        data = new byte[1000];
-        packet = new DatagramPacket(data, data.length);
-        socket.receive(packet);
-
-        ObjectInputStream iStream = new ObjectInputStream(new ByteArrayInputStream(packet.getData()));
-        Message message = (Message) iStream.readObject();
-        iStream.close();
-        
-        if (message.getMessageType() == MessageType.RegistrationResponse) {
-        	System.out.println("Response received!");
-        }
-    
-        socket.close();
+	public void send(Message m) throws IOException, ClassNotFoundException {
+        sendThread.queueMessage(m);
+	}
+	
+	public Message recv() {
+		return inMessages.poll();
+	}
+	
+	public void disconnect() {
+		sendThread.terminate();
+		receiveThread.terminate();
+		
+		try {
+			sendThread.join();
+			receiveThread.join();
+		} catch (InterruptedException e) {
+		}
 	}
 }

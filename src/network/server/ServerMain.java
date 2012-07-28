@@ -5,8 +5,9 @@ import java.io.IOException;
 public class ServerMain {
 	public static void main(String[] args) throws IOException {
 		try {
-			ServerNetworkManager s = new ServerNetworkManager(9001);
-			s.listen();
+			ServerNetworkManager serverNetworkManager = new ServerNetworkManager(8087);
+			serverNetworkManager.waitForRegistrations(4);
+			serverNetworkManager.disconnect();
 		} catch (Exception e) {
 		}
 	}

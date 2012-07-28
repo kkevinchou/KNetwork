@@ -1,57 +1,80 @@
 package network.server;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.Date;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentMap;
 
-import network.message.Message;
-import network.message.RegistrationRequest;
-import network.message.Message.MessageType;
-import network.message.RegistrationResponse;
+import network.message.*;
+import network.threads.*;
 
 public class ServerNetworkManager {
-	private DatagramSocket socket = null;
+	private DatagramSocket socket;
+	private ReceiveThread receiveThread;
+	private ServerRegistrationThread registrationThread;
+	private ConcurrentMap<Integer, SendThread> clientSendThreads;
+	private BlockingQueue<Message> inMessages;
 	
 	public ServerNetworkManager(int port) throws SocketException {
 		socket = new DatagramSocket(port);
+		inMessages = new ArrayBlockingQueue<Message>(100);
+		receiveThread = new ReceiveThread(socket, inMessages);
 	}
 	
-	public void listen() throws IOException, ClassNotFoundException {
-		byte[] data = new byte[100];
-		DatagramPacket packet = new DatagramPacket(data, data.length);
-		socket.receive(packet);
+	public void waitForRegistrations(int numRegistrations) throws InterruptedException {
+		registrationThread = new ServerRegistrationThread(socket, numRegistrations);
+		registrationThread.start();
+		registrationThread.join();
 		
-		ObjectInputStream iStream = new ObjectInputStream(new ByteArrayInputStream(packet.getData()));
-        Message message = (Message) iStream.readObject();
-        iStream.close();
-        
-        ByteArrayOutputStream bStream = null;
-        if (message == null) {
-        	System.out.println("null!");
-        }
-        if (message.getMessageType() == MessageType.RegistrationRequest) {
-        	System.out.println("Registration request received!");
-        	
-        	bStream = new ByteArrayOutputStream();
-            ObjectOutput oo = new ObjectOutputStream(bStream); 
-            oo.writeObject(new RegistrationResponse(1));
-            oo.close();
-            
-            int port = packet.getPort();
-            InetAddress address = packet.getAddress();
-            System.out.println(address.toString() + ", " + port);
-            
-            data = bStream.toByteArray();
-            packet = new DatagramPacket(data, data.length, address, port);
-            socket.send(packet);
-        }
+		clientSendThreads = registrationThread.getClientSendThreads();
+		startSendThreads(clientSendThreads);
+		
+		receiveThread.start();
+	}
+	
+	private void startSendThreads(ConcurrentMap<Integer, SendThread> sendThreads) {
+		SendThread sendThread = null;
+		for (ConcurrentMap.Entry<Integer, SendThread> entry : sendThreads.entrySet()) {
+			sendThread = entry.getValue();
+			sendThread.start();
+		}
+	}
+	
+	public Message recv() throws IOException, ClassNotFoundException {
+		return inMessages.poll();
+	}
+	
+	public void send(int clientId, Message m) {
+		SendThread sendThread = clientSendThreads.get(clientId);
+		sendThread.queueMessage(m);
+	}
+	
+	public void broadcast(Message m) {
+		SendThread sendThread = null;
+		for (ConcurrentMap.Entry<Integer, SendThread> entry : clientSendThreads.entrySet()) {
+			sendThread = entry.getValue();
+			sendThread.queueMessage(m);
+		}
+	}
+	
+	public void disconnect() {
+		receiveThread.terminate();
+		
+		SendThread sendThread = null;
+		for (ConcurrentMap.Entry<Integer, SendThread> entry : clientSendThreads.entrySet()) {
+			sendThread = entry.getValue();
+			sendThread.terminate();
+		}
+		
+		try {
+			receiveThread.join();
+			for (ConcurrentMap.Entry<Integer, SendThread> entry : clientSendThreads.entrySet()) {
+				sendThread = entry.getValue();
+				sendThread.join();
+			}
+		} catch (InterruptedException e) {
+		}
 	}
 }
