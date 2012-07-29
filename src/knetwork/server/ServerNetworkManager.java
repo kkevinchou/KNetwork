@@ -11,7 +11,6 @@ import knetwork.KNetwork;
 import knetwork.message.*;
 import knetwork.threads.*;
 
-
 public class ServerNetworkManager {
 	private DatagramSocket socket;
 	private ReceiveThread receiveThread;
@@ -22,7 +21,6 @@ public class ServerNetworkManager {
 	public ServerNetworkManager(int port) throws SocketException {
 		socket = new DatagramSocket(port);
 		inMessages = new ArrayBlockingQueue<Message>(KNetwork.serverInQueueSize);
-		receiveThread = new ReceiveThread(socket, inMessages);
 	}
 	
 	public void waitForRegistrations(int numRegistrations) throws InterruptedException {
@@ -32,6 +30,8 @@ public class ServerNetworkManager {
 		
 		clientSendThreads = registrationThread.getClientSendThreads();
 		startSendThreads(clientSendThreads);
+		
+		receiveThread = new ReceiveThread(socket, inMessages, registrationThread.getClientIds());
 		receiveThread.start();
 	}
 	
@@ -48,11 +48,14 @@ public class ServerNetworkManager {
 	}
 	
 	public void send(int clientId, Message m) {
+		m.setSenderId(KNetwork.serverSenderId);
 		SendThread sendThread = clientSendThreads.get(clientId);
 		sendThread.queueMessage(m);
 	}
 	
 	public void broadcast(Message m) {
+		m.setSenderId(KNetwork.serverSenderId);
+		
 		SendThread sendThread = null;
 		for (ConcurrentMap.Entry<Integer, SendThread> entry : clientSendThreads.entrySet()) {
 			sendThread = entry.getValue();

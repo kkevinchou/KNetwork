@@ -8,19 +8,19 @@ public abstract class Message implements Serializable {
 	public enum MessageType { RegistrationResponse, RegistrationRequest, Big, Test };
 	
 	public static int nextSeqNumber = 0;
-	private int clientId;
+	private int sendertId;
 	protected int seqNumber;
 	
 	public Message() {
 		seqNumber = nextSeqNumber++;
 	}
 	
-	public int getClientId() {
-		return clientId;
+	public int getSenderId() {
+		return sendertId;
 	}
 
-	public void setClientId(int clientId) {
-		this.clientId = clientId;
+	public void setSenderId(int clientId) {
+		this.sendertId = clientId;
 	}
 	
 	public int getSeqNumber() {

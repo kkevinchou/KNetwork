@@ -8,6 +8,8 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -22,9 +24,14 @@ public class ServerRegistrationThread extends Thread {
 	private int numCurrentRegistrations;
 	private int nextClientId;
 	private ConcurrentMap<Integer, SendThread> clientSendThreads;
+	private List<Integer> clientIds;
 	
 	public ConcurrentMap<Integer, SendThread> getClientSendThreads() {
 		return clientSendThreads;
+	}
+	
+	public List<Integer> getClientIds() {
+		return clientIds;
 	}
 
 	public ServerRegistrationThread(DatagramSocket localSocket, int numRegistrations) {
@@ -34,6 +41,7 @@ public class ServerRegistrationThread extends Thread {
 		
 		this.localSocket = localSocket;
 		this.numRegistrations = numRegistrations;
+		clientIds = new ArrayList<Integer>();
 	}
 	
 	private void main() throws IOException, ClassNotFoundException {
@@ -69,13 +77,15 @@ public class ServerRegistrationThread extends Thread {
     		clientIp = recvPacket.getAddress().getHostAddress();
     		clientPort = recvPacket.getPort();
     		clientSendThreads.put(nextClientId, new SendThread(clientIp, clientPort, localSocket));
+    		clientIds.add(nextClientId);
     		
         	// Send Response
         	bStream = new ByteArrayOutputStream();
             oStream = new ObjectOutputStream(bStream);
             clientAddress = InetAddress.getByName(clientIp);
             
-            oStream.writeObject(new RegistrationResponse(nextClientId));
+            RegistrationResponse registrationResponse = new RegistrationResponse(nextClientId);
+            oStream.writeObject(registrationResponse);
             sendData = bStream.toByteArray();
 	        sendPacket = new DatagramPacket(sendData, sendData.length, clientAddress, clientPort);
 	        localSocket.send(sendPacket);

@@ -22,7 +22,8 @@ public class ClientNetworkManager {
 	public ClientNetworkManager() throws SocketException {
 		socket = new DatagramSocket();
 		inMessages = new ArrayBlockingQueue<Message>(KNetwork.clientInQueueSize);
-		receiveThread = new ReceiveThread(socket, inMessages);
+		
+		receiveThread = new ReceiveThread(socket, inMessages, KNetwork.serverSenderId);
 	}
 	
 	public void register(String serverIp, int serverPort) throws InterruptedException {
@@ -40,7 +41,7 @@ public class ClientNetworkManager {
 	}
 
 	public void send(Message m) throws IOException, ClassNotFoundException {
-		m.setClientId(clientId);
+		m.setSenderId(clientId);
         sendThread.queueMessage(m);
 	}
 	

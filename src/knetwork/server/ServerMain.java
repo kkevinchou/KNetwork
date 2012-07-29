@@ -13,7 +13,7 @@ public class ServerMain {
 	public static void main(String[] args) throws IOException {
 		try {
 			ServerNetworkManager serverNetworkManager = new ServerNetworkManager(8087);
-			serverNetworkManager.waitForRegistrations(1);
+			serverNetworkManager.waitForRegistrations(2);
 			
 			while (true) {
 				Message m = serverNetworkManager.recv();

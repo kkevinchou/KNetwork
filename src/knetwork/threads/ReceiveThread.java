@@ -6,6 +6,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 import knetwork.KNetwork;
@@ -13,18 +18,27 @@ import knetwork.message.Message;
 import knetwork.message.TestMessage;
 import knetwork.message.Message.MessageType;
 
-
 public class ReceiveThread extends Thread {
 	BlockingQueue<Message> inMessages;
 	private boolean finished;
 	protected DatagramSocket localSocket;
 	protected int lastSeqNumber;
+	Map<Integer, Integer> senderSequenceNumbers;
 	
-	public ReceiveThread(DatagramSocket localSocket, BlockingQueue<Message> inMessages) {
+	public ReceiveThread(DatagramSocket localSocket, BlockingQueue<Message> inMessages, List<Integer> senderIds) {
 		this.inMessages = inMessages;
 		this.finished = false;
 		this.localSocket = localSocket;
 		lastSeqNumber = 0;
+		senderSequenceNumbers = new HashMap<Integer, Integer>();
+		
+		for (Integer senderId : senderIds) {
+			senderSequenceNumbers.put(senderId, 0);
+		}
+	}
+	
+	public ReceiveThread(DatagramSocket localSocket, BlockingQueue<Message> inMessages, int senderId) {
+		this(localSocket, inMessages, Arrays.asList(senderId));
 	}
 	
 	private void main() throws IOException, ClassNotFoundException {
@@ -32,6 +46,9 @@ public class ReceiveThread extends Thread {
 		DatagramPacket packet = null;
 		ObjectInputStream iStream = null;
 		Message message = null;
+		int seqNumber = 0;
+		int lastSeqNumber = 0;
+		int senderId = 0;
 		
 		while (!finished) {
 			data = new byte[KNetwork.maxUdpByteReadSize];
@@ -49,12 +66,14 @@ public class ReceiveThread extends Thread {
 				continue;
 			}
 	        
-	        int seqNumber = message.getSeqNumber();
+	        senderId = message.getSenderId();
+	        lastSeqNumber = senderSequenceNumbers.get(senderId);
+	        seqNumber = message.getSeqNumber();
 	        if (seqNumber <= lastSeqNumber) {
 	        	System.out.println("[Receive Thread] Received a message out of order");
 	        	continue;
 	        }
-	        lastSeqNumber = seqNumber;
+	        senderSequenceNumbers.put(message.getSenderId(), seqNumber);
 	        
 	        System.out.println("[Receive Thread] Received message| " + "size = " + packet.getLength() + ", sequence number = " + message.getSeqNumber());
 	        
