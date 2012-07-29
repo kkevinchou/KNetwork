@@ -6,39 +6,24 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 import knetwork.KNetwork;
-import knetwork.message.Message;
-import knetwork.message.TestMessage;
-import knetwork.message.Message.MessageType;
+import knetwork.message.*;
 
-public class ReceiveThread extends Thread {
-	BlockingQueue<Message> inMessages;
+public abstract class ReceiveThread extends Thread {
+	private BlockingQueue<Message> inMessages;
 	private boolean finished;
-	protected DatagramSocket localSocket;
-	protected int lastSeqNumber;
-	Map<Integer, Integer> senderSequenceNumbers;
+	private DatagramSocket localSocket;
+	protected Map<Integer, Integer> senderSequenceNumbers;
 	
-	public ReceiveThread(DatagramSocket localSocket, BlockingQueue<Message> inMessages, List<Integer> senderIds) {
+	public ReceiveThread(DatagramSocket localSocket, BlockingQueue<Message> inMessages) {
 		this.inMessages = inMessages;
 		this.finished = false;
 		this.localSocket = localSocket;
-		lastSeqNumber = 0;
 		senderSequenceNumbers = new HashMap<Integer, Integer>();
-		
-		for (Integer senderId : senderIds) {
-			senderSequenceNumbers.put(senderId, 0);
-		}
-	}
-	
-	public ReceiveThread(DatagramSocket localSocket, BlockingQueue<Message> inMessages, int senderId) {
-		this(localSocket, inMessages, Arrays.asList(senderId));
 	}
 	
 	private void main() throws IOException, ClassNotFoundException {
@@ -67,6 +52,7 @@ public class ReceiveThread extends Thread {
 			}
 	        
 	        senderId = message.getSenderId();
+	        // May need to check for a null return value
 	        lastSeqNumber = senderSequenceNumbers.get(senderId);
 	        seqNumber = message.getSeqNumber();
 	        if (!sequenceNumberOkay(seqNumber, lastSeqNumber)) {
@@ -74,7 +60,7 @@ public class ReceiveThread extends Thread {
 	        	continue;
 	        }
 	        senderSequenceNumbers.put(message.getSenderId(), seqNumber);
-	        
+	        inMessages.add(message);
 	        System.out.println("[Receive Thread] Received message| " + "size = " + packet.getLength() + ", sequence number = " + message.getSeqNumber());
 	        
         	iStream.close();
@@ -84,10 +70,13 @@ public class ReceiveThread extends Thread {
 	public static boolean sequenceNumberOkay(int currentSeqNumber, int lastSeqNumber) {
 		int bitMask = 0x60000000; // bit mask for first 2 bits
 		
-		if (currentSeqNumber > lastSeqNumber) {
+		if (((lastSeqNumber & bitMask) == 0) && ((currentSeqNumber & bitMask) == 0x60000000)) {
+			// Too big of a jump, probably was out of order after a wrap around
+			return false;
+		} else if (currentSeqNumber > lastSeqNumber) {
 			return true;
 		} else if (((lastSeqNumber & bitMask) == 0x60000000) && ((currentSeqNumber & bitMask) == 0))  {
-			// if we go from a 0b11-- number to a 0b00-- number, we must've wrapped around
+			// If we go from a 0b11-- number to a 0b00-- number, we must've wrapped around
 			return true;
 		}
 				

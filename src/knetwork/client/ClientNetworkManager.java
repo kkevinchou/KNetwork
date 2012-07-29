@@ -23,7 +23,7 @@ public class ClientNetworkManager {
 		socket = new DatagramSocket();
 		inMessages = new ArrayBlockingQueue<Message>(KNetwork.clientInQueueSize);
 		
-		receiveThread = new ReceiveThread(socket, inMessages, KNetwork.serverSenderId);
+		receiveThread = new ClientReceiveThread(socket, inMessages);
 	}
 	
 	public void register(String serverIp, int serverPort) throws InterruptedException {

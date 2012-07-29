@@ -31,7 +31,7 @@ public class ServerNetworkManager {
 		clientSendThreads = registrationThread.getClientSendThreads();
 		startSendThreads(clientSendThreads);
 		
-		receiveThread = new ReceiveThread(socket, inMessages, registrationThread.getClientIds());
+		receiveThread = new ServerReceiveThread(socket, inMessages, registrationThread.getClientIds());
 		receiveThread.start();
 	}
 	
