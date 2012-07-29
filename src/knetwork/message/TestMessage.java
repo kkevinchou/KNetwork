@@ -7,6 +7,11 @@ public class TestMessage extends Message implements Serializable {
 
 	public int val;
 	
+	public TestMessage() {
+		super();
+		this.val = 12;
+	}
+	
 	public TestMessage(int val) {
 		super();
 		this.val = val;

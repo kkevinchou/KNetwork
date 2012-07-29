@@ -61,7 +61,7 @@ public abstract class ReceiveThread extends Thread {
 	        }
 	        senderSequenceNumbers.put(message.getSenderId(), seqNumber);
 	        inMessages.add(message);
-	        System.out.println("[Receive Thread] Received message| " + "size = " + packet.getLength() + ", sequence number = " + message.getSeqNumber());
+	        System.out.println("[Receive Thread] Received message [" + message.getSenderId() + "]| " + "size = " + packet.getLength() + ", sequence number = " + message.getSeqNumber());
 	        
         	iStream.close();
 		}
