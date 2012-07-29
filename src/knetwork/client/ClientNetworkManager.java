@@ -7,8 +7,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import knetwork.KNetwork;
+import knetwork.common.ReceiveThread;
+import knetwork.common.SendThread;
 import knetwork.message.*;
-import knetwork.threads.*;
 
 
 public class ClientNetworkManager {

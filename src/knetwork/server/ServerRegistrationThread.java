@@ -1,4 +1,4 @@
-package knetwork.threads;
+package knetwork.server;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import knetwork.KNetwork;
+import knetwork.common.SendThread;
 import knetwork.message.*;
 import knetwork.message.Message.MessageType;
 

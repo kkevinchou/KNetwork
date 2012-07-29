@@ -1,9 +1,10 @@
-package knetwork.threads;
+package knetwork.server;
 
 import java.net.DatagramSocket;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
+import knetwork.common.ReceiveThread;
 import knetwork.message.Message;
 
 public class ServerReceiveThread extends ReceiveThread {

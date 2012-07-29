@@ -1,4 +1,4 @@
-package knetwork.threads;
+package knetwork.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

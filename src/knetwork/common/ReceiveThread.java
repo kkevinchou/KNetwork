@@ -1,4 +1,4 @@
-package knetwork.threads;
+package knetwork.common;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;

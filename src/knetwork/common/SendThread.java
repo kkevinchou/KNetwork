@@ -1,4 +1,4 @@
-package knetwork.threads;
+package knetwork.common;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

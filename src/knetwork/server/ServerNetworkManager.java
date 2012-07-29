@@ -8,8 +8,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentMap;
 
 import knetwork.KNetwork;
+import knetwork.common.ReceiveThread;
+import knetwork.common.SendThread;
 import knetwork.message.*;
-import knetwork.threads.*;
 
 public class ServerNetworkManager {
 	private DatagramSocket socket;
