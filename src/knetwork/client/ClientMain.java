@@ -3,6 +3,7 @@ package knetwork.client;
 import java.io.IOException;
 
 import knetwork.message.*;
+import knetwork.threads.ReceiveThread;
 
 
 public class ClientMain {
@@ -11,7 +12,7 @@ public class ClientMain {
 			ClientNetworkManager clientNetworkManager = new ClientNetworkManager();
 			clientNetworkManager.register("192.168.203.130", 8087);
 			
-			Thread.sleep(5000);
+			Thread.sleep(3000);
 			for (int i = 0; i < 10; i++) {
 		        BigMessage b1 = new BigMessage(1300);
 				clientNetworkManager.send(b1);

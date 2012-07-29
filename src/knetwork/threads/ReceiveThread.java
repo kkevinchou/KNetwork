@@ -69,7 +69,7 @@ public class ReceiveThread extends Thread {
 	        senderId = message.getSenderId();
 	        lastSeqNumber = senderSequenceNumbers.get(senderId);
 	        seqNumber = message.getSeqNumber();
-	        if (seqNumber <= lastSeqNumber) {
+	        if (!sequenceNumberOkay(seqNumber, lastSeqNumber)) {
 	        	System.out.println("[Receive Thread] Received a message out of order");
 	        	continue;
 	        }
@@ -79,6 +79,19 @@ public class ReceiveThread extends Thread {
 	        
         	iStream.close();
 		}
+	}
+	
+	public static boolean sequenceNumberOkay(int currentSeqNumber, int lastSeqNumber) {
+		int bitMask = 0x60000000; // bit mask for first 2 bits
+		
+		if (currentSeqNumber > lastSeqNumber) {
+			return true;
+		} else if (((lastSeqNumber & bitMask) == 0x60000000) && ((currentSeqNumber & bitMask) == 0))  {
+			// if we go from a 0b11-- number to a 0b00-- number, we must've wrapped around
+			return true;
+		}
+				
+		return false;
 	}
 	
 	public void terminate() {

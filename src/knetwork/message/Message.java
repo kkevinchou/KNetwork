@@ -12,6 +12,7 @@ public abstract class Message implements Serializable {
 	protected int seqNumber;
 	
 	public Message() {
+		nextSeqNumber = nextSeqNumber % Integer.MAX_VALUE;
 		seqNumber = nextSeqNumber++;
 	}
 	
