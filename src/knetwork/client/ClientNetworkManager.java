@@ -10,35 +10,41 @@ import knetwork.KNetwork;
 import knetwork.common.ReceiveThread;
 import knetwork.common.SendThread;
 import knetwork.message.*;
+import knetwork.message.Message.MessageType;
 
 
 public class ClientNetworkManager {
 	private DatagramSocket socket;
 	private SendThread sendThread;
 	private ReceiveThread receiveThread;
-	private ClientRegistrationThread registrationThread;
 	private BlockingQueue<Message> inMessages;
 	private int clientId;
+	
+	private static final int REGISTRATION_TIMEOUT = 500;
 	
 	public ClientNetworkManager() throws SocketException {
 		socket = new DatagramSocket();
 		inMessages = new ArrayBlockingQueue<Message>(KNetwork.clientInQueueSize);
-		
 		receiveThread = new ClientReceiveThread(socket, inMessages);
 	}
 	
 	public void register(String serverIp, int serverPort) throws InterruptedException {
-		registrationThread = new ClientRegistrationThread(serverIp, serverPort, socket);
-		registrationThread.start();
-		registrationThread.join();
-
-		clientId = registrationThread.getClientId();
-		System.out.println("Registered with clientId = " + clientId);
-
 		sendThread = new SendThread(serverIp, serverPort, socket);
 		sendThread.start();
-		
+		sendThread.queueMessage(new RegistrationRequest());
+
 		receiveThread.start();
+		
+		Message m = recv();
+		while (m == null || m.getMessageType() != MessageType.RegistrationResponse) {
+			Thread.sleep(REGISTRATION_TIMEOUT);
+			m = recv();
+		}
+		
+		RegistrationResponse regResponse = (RegistrationResponse)m;
+		clientId = regResponse.getRegisteredClientId();
+		
+		System.out.println("Registered with clientId = " + clientId);
 	}
 
 	public void send(Message m) throws IOException, ClassNotFoundException {
@@ -51,13 +57,15 @@ public class ClientNetworkManager {
 	}
 	
 	public void disconnect() {
-		sendThread.terminate();
 		receiveThread.terminate();
+		sendThread.terminate();
+		socket.close();
 		
 		try {
-			sendThread.join();
 			receiveThread.join();
+			sendThread.join();
 		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 }

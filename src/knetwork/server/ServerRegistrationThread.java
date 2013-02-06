@@ -63,6 +63,7 @@ public class ServerRegistrationThread extends Thread {
 		while (numCurrentRegistrations < numRegistrations) {
 			recvData = new byte[KNetwork.maxUdpByteReadSize];
 			recvPacket = new DatagramPacket(recvData, recvData.length);
+			
 			localSocket.receive(recvPacket);
 			iStream = new ObjectInputStream(new ByteArrayInputStream(recvPacket.getData()));
 			
@@ -86,6 +87,7 @@ public class ServerRegistrationThread extends Thread {
             clientAddress = InetAddress.getByName(clientIp);
             
             RegistrationResponse registrationResponse = new RegistrationResponse(nextClientId);
+            registrationResponse.setSenderId(KNetwork.serverSenderId);
             oStream.writeObject(registrationResponse);
             sendData = bStream.toByteArray();
 	        sendPacket = new DatagramPacket(sendData, sendData.length, clientAddress, clientPort);

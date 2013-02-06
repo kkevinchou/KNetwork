@@ -10,6 +10,6 @@ import knetwork.message.Message;
 public class ClientReceiveThread extends ReceiveThread {
 	public ClientReceiveThread(DatagramSocket localSocket, BlockingQueue<Message> inMessages) {
 		super(localSocket, inMessages);
-		senderSequenceNumbers.put(KNetwork.serverSenderId, 0);
+		senderSequenceNumbers.put(KNetwork.serverSenderId, -1);
 	}
 }

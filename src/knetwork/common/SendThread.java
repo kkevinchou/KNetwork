@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -22,7 +23,7 @@ public class SendThread extends Thread {
 	private DatagramSocket localSocket;
 	
 	public SendThread(String destinationIp, int destinationPort, DatagramSocket localSocket) {
-		this.finished = false;
+		finished = false;
 		outMessages = new ArrayBlockingQueue<Message>(KNetwork.sendThreadQueueSize);
 		
 		this.destinationIp = destinationIp;
@@ -46,7 +47,7 @@ public class SendThread extends Thread {
 				oStream.writeObject(message);
 				
 		        data = bStream.toByteArray();
-		        System.out.println("[Send Thread] Sending " + data.length + " bytes of data, sequence number = " + message.getSeqNumber());
+		        System.out.println("[Send Thread] Sending message| size = " + data.length + ", seq# = " + message.getSeqNumber());
 		        packet = new DatagramPacket(data, data.length, destinationAddress, destinationPort);
 		        localSocket.send(packet);
 				
@@ -57,7 +58,6 @@ public class SendThread extends Thread {
 	
 	public void terminate() {
 		this.finished = true;
-		this.interrupt();
 	}
 	
 	public void queueMessage(Message m) {
@@ -67,8 +67,11 @@ public class SendThread extends Thread {
 	public void run() {
 		try {
 			main();
-		}catch (Exception e) {
+		}catch (SocketException e) {
+			System.out.println("[Send Thread] " + e.toString());
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println("[Send Thread] Terminated");
 	}
 }

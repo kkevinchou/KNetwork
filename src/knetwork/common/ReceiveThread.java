@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -52,7 +53,6 @@ public abstract class ReceiveThread extends Thread {
 			}
 	        
 	        senderId = message.getSenderId();
-	        // May need to check for a null return value
 	        lastSeqNumber = senderSequenceNumbers.get(senderId);
 	        seqNumber = message.getSeqNumber();
 	        if (!sequenceNumberOkay(seqNumber, lastSeqNumber)) {
@@ -61,7 +61,7 @@ public abstract class ReceiveThread extends Thread {
 	        }
 	        senderSequenceNumbers.put(message.getSenderId(), seqNumber);
 	        inMessages.add(message);
-	        System.out.println("[Receive Thread] Received message [" + message.getSenderId() + "]| " + "size = " + packet.getLength() + ", sequence number = " + message.getSeqNumber());
+	        System.out.println("[Receive Thread] Received message [" + message.getSenderId() + "]| " + "size = " + packet.getLength() + ", seq# = " + message.getSeqNumber());
 	        
         	iStream.close();
 		}
@@ -85,14 +85,18 @@ public abstract class ReceiveThread extends Thread {
 	
 	public void terminate() {
 		this.finished = true;
-		this.interrupt();
 	}
 	
 	public void run() {
 		try {
 			main();
-		}catch (Exception e) {
+		} catch (SocketException e) {
+			System.out.println("[Receive Thread] " + e.toString());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println("[Receive Thread] Terminated");
 	}
 }
