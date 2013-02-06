@@ -40,19 +40,23 @@ public class SendThread extends Thread {
         Message message = null;
         
 		while (!finished) {
-			message = outMessages.poll();
-			if (message != null) {
-				bStream = new ByteArrayOutputStream();
-		        oStream = new ObjectOutputStream(bStream);
-				oStream.writeObject(message);
-				
-		        data = bStream.toByteArray();
-		        System.out.println("[Send Thread] Sending message| size = " + data.length + ", seq# = " + message.getSeqNumber());
-		        packet = new DatagramPacket(data, data.length, destinationAddress, destinationPort);
-		        localSocket.send(packet);
-				
-				oStream.close();
+			try {
+				message = outMessages.take();
+			} catch (InterruptedException e) {
+				System.out.println("[Send Thread] " + e.toString());
+				continue;
 			}
+			
+			bStream = new ByteArrayOutputStream();
+	        oStream = new ObjectOutputStream(bStream);
+			oStream.writeObject(message);
+			
+	        data = bStream.toByteArray();
+	        System.out.println("[Send Thread] Sending message| size = " + data.length + ", seq# = " + message.getSeqNumber());
+	        packet = new DatagramPacket(data, data.length, destinationAddress, destinationPort);
+	        localSocket.send(packet);
+			
+			oStream.close();
 		}
 	}
 	

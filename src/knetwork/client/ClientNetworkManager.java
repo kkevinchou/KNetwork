@@ -25,26 +25,34 @@ public class ClientNetworkManager {
 	public ClientNetworkManager() throws SocketException {
 		socket = new DatagramSocket();
 		inMessages = new ArrayBlockingQueue<Message>(KNetwork.clientInQueueSize);
-		receiveThread = new ClientReceiveThread(socket, inMessages);
 	}
 	
 	public void register(String serverIp, int serverPort) throws InterruptedException {
 		sendThread = new SendThread(serverIp, serverPort, socket);
-		sendThread.start();
 		sendThread.queueMessage(new RegistrationRequest());
+		sendThread.start();
 
+		receiveThread = new ClientReceiveThread(socket, inMessages);
 		receiveThread.start();
 		
-		Message m = recv();
-		while (m == null || m.getMessageType() != MessageType.RegistrationResponse) {
-			Thread.sleep(REGISTRATION_TIMEOUT);
-			m = recv();
+		Message m = null;
+		
+		try {
+			m = recv_blocking();
+			while (m.getMessageType() != MessageType.RegistrationResponse) {
+				Thread.sleep(REGISTRATION_TIMEOUT);
+				m = recv();
+			}
+		} catch (InterruptedException e) {
+			System.out.println("[ClientNetworkManager] " + e.toString());
+			System.out.println("[ClientNetworkManager] Registration interrupted");
+			return;
 		}
 		
 		RegistrationResponse regResponse = (RegistrationResponse)m;
 		clientId = regResponse.getRegisteredClientId();
 		
-		System.out.println("Registered with clientId = " + clientId);
+		System.out.println("[ClientNetworkManager] Registered with clientId = " + clientId);
 	}
 
 	public void send(Message m) throws IOException, ClassNotFoundException {
@@ -56,6 +64,10 @@ public class ClientNetworkManager {
 		return inMessages.poll();
 	}
 	
+	public Message recv_blocking() throws InterruptedException {
+		return inMessages.take();
+	}
+	
 	public void disconnect() {
 		receiveThread.terminate();
 		sendThread.terminate();
@@ -63,7 +75,9 @@ public class ClientNetworkManager {
 		
 		try {
 			receiveThread.join();
+			System.out.println("disconnect 1");
 			sendThread.join();
+			System.out.println("disconnect 2");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
