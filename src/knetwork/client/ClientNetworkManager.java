@@ -20,8 +20,6 @@ public class ClientNetworkManager {
 	private BlockingQueue<Message> inMessages;
 	private int clientId;
 	
-	private static final int REGISTRATION_TIMEOUT = 500;
-	
 	public ClientNetworkManager() throws SocketException {
 		socket = new DatagramSocket();
 		inMessages = new ArrayBlockingQueue<Message>(KNetwork.clientInQueueSize);
@@ -40,8 +38,7 @@ public class ClientNetworkManager {
 		try {
 			m = recv_blocking();
 			while (m.getMessageType() != MessageType.RegistrationResponse) {
-				Thread.sleep(REGISTRATION_TIMEOUT);
-				m = recv();
+				m = recv_blocking();
 			}
 		} catch (InterruptedException e) {
 			System.out.println("[ClientNetworkManager] " + e.toString());
