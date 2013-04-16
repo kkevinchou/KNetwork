@@ -1,6 +1,5 @@
 package knetwork.client;
 
-import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -30,7 +29,7 @@ public class ClientNetworkManager {
 		sendThread.queueMessage(new RegistrationRequest());
 		sendThread.start();
 
-		receiveThread = new ClientReceiveThread(socket, inMessages);
+		receiveThread = new ReceiveThread(socket, inMessages);
 		receiveThread.start();
 		
 		Message m = null;
@@ -43,7 +42,7 @@ public class ClientNetworkManager {
 		} catch (InterruptedException e) {
 			System.out.println("[ClientNetworkManager] " + e.toString());
 			System.out.println("[ClientNetworkManager] Registration interrupted");
-			return;
+			throw e;
 		}
 		
 		RegistrationResponse regResponse = (RegistrationResponse)m;
@@ -52,7 +51,7 @@ public class ClientNetworkManager {
 		System.out.println("[ClientNetworkManager] Registered with clientId = " + clientId);
 	}
 
-	public void send(Message m) throws IOException, ClassNotFoundException {
+	public void send(Message m) {
 		m.setSenderId(clientId);
         sendThread.queueMessage(m);
 	}

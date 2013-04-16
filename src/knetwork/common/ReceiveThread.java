@@ -14,16 +14,16 @@ import java.util.concurrent.BlockingQueue;
 import knetwork.KNetwork;
 import knetwork.message.*;
 
-public abstract class ReceiveThread extends Thread {
+public class ReceiveThread extends Thread {
 	private BlockingQueue<Message> inMessages;
 	private boolean finished;
 	private DatagramSocket localSocket;
 	protected Map<Integer, Integer> senderSequenceNumbers;
 	
 	public ReceiveThread(DatagramSocket localSocket, BlockingQueue<Message> inMessages) {
-		this.inMessages = inMessages;
-		this.finished = false;
 		this.localSocket = localSocket;
+		this.inMessages = inMessages;
+		finished = false;
 		senderSequenceNumbers = new HashMap<Integer, Integer>();
 	}
 	
@@ -33,7 +33,6 @@ public abstract class ReceiveThread extends Thread {
 		ObjectInputStream iStream = null;
 		Message message = null;
 		int seqNumber = 0;
-		int lastSeqNumber = 0;
 		int senderId = 0;
 		
 		while (!finished) {
@@ -53,34 +52,17 @@ public abstract class ReceiveThread extends Thread {
 			}
 	        
 	        senderId = message.getSenderId();
-	        lastSeqNumber = senderSequenceNumbers.get(senderId);
 	        seqNumber = message.getSeqNumber();
-	        if (!sequenceNumberOkay(seqNumber, lastSeqNumber)) {
-	        	System.out.println("[Receive Thread] Received a message out of order");
-	        	continue;
-	        }
-	        senderSequenceNumbers.put(message.getSenderId(), seqNumber);
+	        
+	        // For now, we won't check for valid sequence numbers
+	        // I haven't thought of a good way to handle wrapping around yet
+	        
+	        senderSequenceNumbers.put(senderId, seqNumber);
 	        inMessages.add(message);
-	        System.out.println("[Receive Thread] Received message [" + message.getSenderId() + "]| " + "size = " + packet.getLength() + ", seq# = " + message.getSeqNumber());
+	        System.out.println("[Receive Thread] Received message [" + senderId + "]| " + "size = " + packet.getLength() + ", seq# = " + seqNumber);
 	        
         	iStream.close();
 		}
-	}
-	
-	public static boolean sequenceNumberOkay(int currentSeqNumber, int lastSeqNumber) {
-		int bitMask = 0x60000000; // bit mask for first 2 bits
-		
-		if (((lastSeqNumber & bitMask) == 0) && ((currentSeqNumber & bitMask) == 0x60000000)) {
-			// Too big of a jump, probably was out of order after a wrap around
-			return false;
-		} else if (currentSeqNumber > lastSeqNumber) {
-			return true;
-		} else if (((lastSeqNumber & bitMask) == 0x60000000) && ((currentSeqNumber & bitMask) == 0))  {
-			// If we go from a 0b11-- number to a 0b00-- number, we must've wrapped around
-			return true;
-		}
-				
-		return false;
 	}
 	
 	public void terminate() {
@@ -98,5 +80,22 @@ public abstract class ReceiveThread extends Thread {
 			e.printStackTrace();
 		}
 		System.out.println("[Receive Thread] Terminated");
+	}
+	
+	// TODO: This way of handling wrapping seems very hacky...
+	private boolean sequenceNumberOkay(int currentSeqNumber, int lastSeqNumber) {
+		int bitMask = 0x60000000; // bit mask for first 2 bits
+		
+		if (((lastSeqNumber & bitMask) == 0) && ((currentSeqNumber & bitMask) == 0x60000000)) {
+			// Too big of a jump, probably was out of order after a wrap around
+			return false;
+		} else if (currentSeqNumber > lastSeqNumber) {
+			return true;
+		} else if (((lastSeqNumber & bitMask) == 0x60000000) && ((currentSeqNumber & bitMask) == 0))  {
+			// If we go from a 0b11-- number to a 0b00-- number, we must've wrapped around
+			return true;
+		}
+				
+		return false;
 	}
 }
