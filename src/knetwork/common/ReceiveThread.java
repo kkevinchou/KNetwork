@@ -54,7 +54,7 @@ public class ReceiveThread extends Thread {
 	        senderId = message.getSenderId();
 	        seqNumber = message.getSeqNumber();
 	        
-	        // For now, we won't check for valid sequence numbers
+	        // For now, we don't check for valid sequence numbers
 	        // I haven't thought of a good way to handle wrapping around yet
 	        
 	        senderSequenceNumbers.put(senderId, seqNumber);
@@ -80,22 +80,5 @@ public class ReceiveThread extends Thread {
 			e.printStackTrace();
 		}
 		System.out.println("[Receive Thread] Terminated");
-	}
-	
-	// TODO: This way of handling wrapping seems very hacky...
-	private boolean sequenceNumberOkay(int currentSeqNumber, int lastSeqNumber) {
-		int bitMask = 0x60000000; // bit mask for first 2 bits
-		
-		if (((lastSeqNumber & bitMask) == 0) && ((currentSeqNumber & bitMask) == 0x60000000)) {
-			// Too big of a jump, probably was out of order after a wrap around
-			return false;
-		} else if (currentSeqNumber > lastSeqNumber) {
-			return true;
-		} else if (((lastSeqNumber & bitMask) == 0x60000000) && ((currentSeqNumber & bitMask) == 0))  {
-			// If we go from a 0b11-- number to a 0b00-- number, we must've wrapped around
-			return true;
-		}
-				
-		return false;
 	}
 }
