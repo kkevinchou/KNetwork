@@ -67,15 +67,14 @@ public class ClientNetworkManager {
 	public void disconnect() {
 		receiveThread.terminate();
 		sendThread.terminate();
-		socket.close();
 		
 		try {
 			receiveThread.join();
-			System.out.println("disconnect 1");
 			sendThread.join();
-			System.out.println("disconnect 2");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
+		socket.close();
 	}
 }
