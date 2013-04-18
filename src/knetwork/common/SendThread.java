@@ -10,7 +10,7 @@ import java.net.SocketException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import knetwork.KNetwork;
+import knetwork.Constants;
 import knetwork.message.Message;
 
 
@@ -22,7 +22,7 @@ public class SendThread extends Thread {
 	private DatagramSocket localSocket;
 	
 	public SendThread(String destinationIp, int destinationPort, DatagramSocket localSocket) {
-		outMessages = new ArrayBlockingQueue<Message>(KNetwork.SEND_THREAD_QUEUE_SIZE);
+		outMessages = new ArrayBlockingQueue<Message>(Constants.SEND_THREAD_QUEUE_SIZE);
 		
 		this.destinationIp = destinationIp;
 		this.destinationPort = destinationPort;

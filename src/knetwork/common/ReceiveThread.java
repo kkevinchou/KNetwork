@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
-import knetwork.KNetwork;
+import knetwork.Constants;
 import knetwork.message.*;
 
 public class ReceiveThread extends Thread {
@@ -35,7 +35,7 @@ public class ReceiveThread extends Thread {
 		int senderId = 0;
 		
 		while (true) {
-			data = new byte[KNetwork.MAX_UDP_BYTE_READ_SIZE];
+			data = new byte[Constants.MAX_UDP_BYTE_READ_SIZE];
 			packet = new DatagramPacket(data, data.length);
 			localSocket.receive(packet);
 			iStream = new ObjectInputStream(new ByteArrayInputStream(packet.getData()));

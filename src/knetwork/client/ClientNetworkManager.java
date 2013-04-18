@@ -5,7 +5,7 @@ import java.net.SocketException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import knetwork.KNetwork;
+import knetwork.Constants;
 import knetwork.common.ReceiveThread;
 import knetwork.common.SendThread;
 import knetwork.message.*;
@@ -21,7 +21,7 @@ public class ClientNetworkManager {
 	
 	public ClientNetworkManager() throws SocketException {
 		socket = new DatagramSocket();
-		inMessages = new ArrayBlockingQueue<Message>(KNetwork.CLIENT_IN_QUEUE_SIZE);
+		inMessages = new ArrayBlockingQueue<Message>(Constants.CLIENT_IN_QUEUE_SIZE);
 	}
 	
 	public void register(String serverIp, int serverPort) throws InterruptedException {
