@@ -1,9 +1,7 @@
 package knetwork.server;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -17,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import knetwork.Constants;
+import knetwork.common.Helper;
 import knetwork.common.ReceiveThread;
 import knetwork.common.SendThread;
 import knetwork.message.*;
@@ -67,7 +66,7 @@ public class ServerNetworkManager {
 		DatagramPacket recvPacket = new DatagramPacket(recvData, recvData.length);
 		socket.receive(recvPacket);
 		
-		Message message = getMessageFromPacket(recvPacket);
+		Message message = Helper.getMessageFromPacket(recvPacket);
 		if (message == null || message.getMessageType() != MessageType.RegistrationRequest) {
 			return false;
 		}
@@ -99,22 +98,6 @@ public class ServerNetworkManager {
 
         bStream.close();
         oStream.close();
-	}
-	
-	private Message getMessageFromPacket(DatagramPacket packet) throws IOException {
-		ObjectInputStream iStream = new ObjectInputStream(new ByteArrayInputStream(packet.getData()));
-		Message message = null;
-		
-		try {
-			message = (Message)iStream.readObject();
-		} catch (ClassCastException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-        iStream.close();
-    	return message;
 	}
 	
 	private void startSendThreads() {
