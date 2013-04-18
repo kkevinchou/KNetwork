@@ -65,8 +65,8 @@ public class ClientNetworkManager {
 	}
 	
 	public void disconnect() {
-		receiveThread.terminate();
-		sendThread.terminate();
+		receiveThread.interrupt();
+		sendThread.interrupt();
 		
 		try {
 			receiveThread.join();

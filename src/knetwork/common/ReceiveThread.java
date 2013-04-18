@@ -16,14 +16,13 @@ import knetwork.message.*;
 
 public class ReceiveThread extends Thread {
 	private BlockingQueue<Message> inMessages;
-	private boolean finished;
 	private DatagramSocket localSocket;
 	protected Map<Integer, Integer> senderSequenceNumbers;
+	public boolean executionFinished;
 	
 	public ReceiveThread(DatagramSocket localSocket, BlockingQueue<Message> inMessages) {
 		this.localSocket = localSocket;
 		this.inMessages = inMessages;
-		finished = false;
 		senderSequenceNumbers = new HashMap<Integer, Integer>();
 	}
 	
@@ -35,7 +34,7 @@ public class ReceiveThread extends Thread {
 		int seqNumber = 0;
 		int senderId = 0;
 		
-		while (!finished) {
+		while (true) {
 			data = new byte[KNetwork.maxUdpByteReadSize];
 			packet = new DatagramPacket(data, data.length);
 			localSocket.receive(packet);
@@ -65,20 +64,20 @@ public class ReceiveThread extends Thread {
 		}
 	}
 	
-	public void terminate() {
-		this.finished = true;
+	public void interrupt() {
+		super.interrupt();
+	    localSocket.close();
 	}
 	
 	public void run() {
 		try {
 			main();
 		} catch (SocketException e) {
-			System.out.println("[Receive Thread] " + e.toString());
+//			System.out.println("[Receive Thread] " + e.toString());
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("[Receive Thread] " + e.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("[Receive Thread] " + e.toString());
 		}
-		System.out.println("[Receive Thread] Terminated");
 	}
 }

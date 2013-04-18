@@ -146,12 +146,12 @@ public class ServerNetworkManager {
 	}
 	
 	public void disconnect() {
-		receiveThread.terminate();
+		receiveThread.interrupt();
 		
 		SendThread sendThread = null;
 		for (ConcurrentMap.Entry<Integer, SendThread> entry : clientSendThreads.entrySet()) {
 			sendThread = entry.getValue();
-			sendThread.terminate();
+			sendThread.interrupt();
 		}
 		
 		try {

@@ -19,11 +19,9 @@ public class SendThread extends Thread {
 
 	private String destinationIp;
 	private int destinationPort;
-	private boolean finished;
 	private DatagramSocket localSocket;
 	
 	public SendThread(String destinationIp, int destinationPort, DatagramSocket localSocket) {
-		finished = false;
 		outMessages = new ArrayBlockingQueue<Message>(KNetwork.sendThreadQueueSize);
 		
 		this.destinationIp = destinationIp;
@@ -31,7 +29,7 @@ public class SendThread extends Thread {
 		this.localSocket = localSocket;
 	}
 	
-	private void main() throws IOException {
+	private void main() throws IOException, InterruptedException {
 		byte[] data = null;
 		InetAddress destinationAddress = InetAddress.getByName(destinationIp);
         DatagramPacket packet = null;
@@ -39,13 +37,8 @@ public class SendThread extends Thread {
         ObjectOutputStream oStream = null;
         Message message = null;
         
-		while (!finished) {
-			try {
-				message = outMessages.take();
-			} catch (InterruptedException e) {
-				System.out.println("[Send Thread] " + e.toString());
-				continue;
-			}
+		while (true) {
+			message = outMessages.take();
 			
 			bStream = new ByteArrayOutputStream();
 	        oStream = new ObjectOutputStream(bStream);
@@ -60,8 +53,9 @@ public class SendThread extends Thread {
 		}
 	}
 	
-	public void terminate() {
-		this.finished = true;
+	public void interrupt() {
+		super.interrupt();
+	    localSocket.close();
 	}
 	
 	public void queueMessage(Message m) {
@@ -71,11 +65,12 @@ public class SendThread extends Thread {
 	public void run() {
 		try {
 			main();
-		}catch (SocketException e) {
-			System.out.println("[Send Thread] " + e.toString());
+		} catch (SocketException e) {
+//			System.out.println("[Send Thread] " + e.toString());
+		} catch (InterruptedException e) {
+//			System.out.println("[Send Thread] " + e.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("[Send Thread] " + e.toString());
 		}
-		System.out.println("[Send Thread] Terminated");
 	}
 }
