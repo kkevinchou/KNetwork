@@ -22,7 +22,7 @@ public class SendThread extends Thread {
 	private DatagramSocket localSocket;
 	
 	public SendThread(String destinationIp, int destinationPort, DatagramSocket localSocket) {
-		outMessages = new ArrayBlockingQueue<Message>(KNetwork.sendThreadQueueSize);
+		outMessages = new ArrayBlockingQueue<Message>(KNetwork.SEND_THREAD_QUEUE_SIZE);
 		
 		this.destinationIp = destinationIp;
 		this.destinationPort = destinationPort;

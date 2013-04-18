@@ -2,9 +2,9 @@ package knetwork;
 
 // Constants for KNetwork
 public class KNetwork {
-	public static final int sendThreadQueueSize = 1000;
-	public static final int serverInQueueSize = 10000;
-	public static final int clientInQueueSize = 1000;
-	public static final int maxUdpByteReadSize = 1400;
-	public static final int serverSenderId = -1;
+	public static final int SEND_THREAD_QUEUE_SIZE = 1000;
+	public static final int SERVER_IN_QUEUE_SIZE = 10000;
+	public static final int CLIENT_IN_QUEUE_SIZE = 1000;
+	public static final int MAX_UDP_BYTE_READ_SIZE = 1400;
+	public static final int SERVER_SENDER_ID = -1;
 }

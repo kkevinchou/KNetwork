@@ -35,7 +35,7 @@ public class ReceiveThread extends Thread {
 		int senderId = 0;
 		
 		while (true) {
-			data = new byte[KNetwork.maxUdpByteReadSize];
+			data = new byte[KNetwork.MAX_UDP_BYTE_READ_SIZE];
 			packet = new DatagramPacket(data, data.length);
 			localSocket.receive(packet);
 			iStream = new ObjectInputStream(new ByteArrayInputStream(packet.getData()));

@@ -21,7 +21,7 @@ public class ClientNetworkManager {
 	
 	public ClientNetworkManager() throws SocketException {
 		socket = new DatagramSocket();
-		inMessages = new ArrayBlockingQueue<Message>(KNetwork.clientInQueueSize);
+		inMessages = new ArrayBlockingQueue<Message>(KNetwork.CLIENT_IN_QUEUE_SIZE);
 	}
 	
 	public void register(String serverIp, int serverPort) throws InterruptedException {

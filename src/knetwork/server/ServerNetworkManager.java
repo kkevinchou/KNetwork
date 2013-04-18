@@ -30,7 +30,7 @@ public class ServerNetworkManager {
 	
 	public ServerNetworkManager(int port) throws SocketException {
 		socket = new DatagramSocket(port);
-		inMessages = new ArrayBlockingQueue<Message>(KNetwork.serverInQueueSize);
+		inMessages = new ArrayBlockingQueue<Message>(KNetwork.SERVER_IN_QUEUE_SIZE);
 		clientSendThreads = new ConcurrentHashMap<Integer, SendThread>();
 	}
 	
@@ -63,7 +63,7 @@ public class ServerNetworkManager {
 	}
 
 	private boolean registerUser(int clientId) throws IOException {
-		byte[] recvData = new byte[KNetwork.maxUdpByteReadSize];
+		byte[] recvData = new byte[KNetwork.MAX_UDP_BYTE_READ_SIZE];
 		DatagramPacket recvPacket = new DatagramPacket(recvData, recvData.length);
 		socket.receive(recvPacket);
 		
@@ -86,7 +86,7 @@ public class ServerNetworkManager {
 	
 	private void sendRegistrationResponse(String clientIp, int clientPort, int clientId) throws IOException {
 		RegistrationResponse registrationResponse = new RegistrationResponse(clientId);
-        registrationResponse.setSenderId(KNetwork.serverSenderId);
+        registrationResponse.setSenderId(KNetwork.SERVER_SENDER_ID);
         
 		ByteArrayOutputStream bStream = new ByteArrayOutputStream();
     	ObjectOutputStream oStream = new ObjectOutputStream(bStream);
@@ -130,13 +130,13 @@ public class ServerNetworkManager {
 	}
 	
 	public void send(int clientId, Message m) {
-		m.setSenderId(KNetwork.serverSenderId);
+		m.setSenderId(KNetwork.SERVER_SENDER_ID);
 		SendThread sendThread = clientSendThreads.get(clientId);
 		sendThread.queueMessage(m);
 	}
 	
 	public void broadcast(Message m) {
-		m.setSenderId(KNetwork.serverSenderId);
+		m.setSenderId(KNetwork.SERVER_SENDER_ID);
 		
 		SendThread sendThread = null;
 		for (ConcurrentMap.Entry<Integer, SendThread> entry : clientSendThreads.entrySet()) {
