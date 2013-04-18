@@ -1,8 +1,6 @@
 package knetwork.server;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -87,17 +85,10 @@ public class ServerNetworkManager {
 		RegistrationResponse registrationResponse = new RegistrationResponse(clientId);
         registrationResponse.setSenderId(Constants.SERVER_SENDER_ID);
         
-		ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-    	ObjectOutputStream oStream = new ObjectOutputStream(bStream);
-        oStream.writeObject(registrationResponse);
-        
-        byte[] sendData = bStream.toByteArray();
+        byte[] sendData = Helper.convertMessageToByteArray(registrationResponse);
     	InetAddress clientAddress = InetAddress.getByName(clientIp);
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, clientAddress, clientPort);
         socket.send(sendPacket);
-
-        bStream.close();
-        oStream.close();
 	}
 	
 	private void startSendThreads() {

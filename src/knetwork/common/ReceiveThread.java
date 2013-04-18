@@ -23,7 +23,7 @@ public class ReceiveThread extends Thread {
 		senderSequenceNumbers = new HashMap<Integer, Integer>();
 	}
 	
-	private void main() throws IOException, ClassNotFoundException {
+	private void main() throws IOException {
 		while (true) {
 			byte[] data = new byte[Constants.MAX_UDP_BYTE_READ_SIZE];
 			DatagramPacket packet = new DatagramPacket(data, data.length);
@@ -56,8 +56,6 @@ public class ReceiveThread extends Thread {
 			main();
 		} catch (SocketException e) {
 //			System.out.println("[Receive Thread] " + e.toString());
-		} catch (ClassNotFoundException e) {
-			System.out.println("[Receive Thread] " + e.toString());
 		} catch (IOException e) {
 			System.out.println("[Receive Thread] " + e.toString());
 		}

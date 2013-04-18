@@ -1,11 +1,16 @@
 package knetwork.common;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 
+import knetwork.Constants;
 import knetwork.message.Message;
+import knetwork.message.RegistrationResponse;
 
 public abstract class Helper {
 	public static Message getMessageFromPacket(DatagramPacket packet) {
@@ -23,5 +28,21 @@ public abstract class Helper {
 		}
 		
     	return message;
+	}
+	
+	public static byte[] convertMessageToByteArray(Message m) {
+		ByteArrayOutputStream bStream = new ByteArrayOutputStream();
+    	ObjectOutputStream oStream;
+		try {
+			oStream = new ObjectOutputStream(bStream);
+	        oStream.writeObject(m);
+
+	        bStream.close();
+	        oStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        
+        return bStream.toByteArray();
 	}
 }

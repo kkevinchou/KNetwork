@@ -1,8 +1,6 @@
 package knetwork.common;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -30,26 +28,16 @@ public class SendThread extends Thread {
 	}
 	
 	private void main() throws IOException, InterruptedException {
-		byte[] data = null;
 		InetAddress destinationAddress = InetAddress.getByName(destinationIp);
-        DatagramPacket packet = null;
-        ByteArrayOutputStream bStream = null;
-        ObjectOutputStream oStream = null;
-        Message message = null;
         
 		while (true) {
-			message = outMessages.take();
+			Message message = outMessages.take();
+			byte[] data = Helper.convertMessageToByteArray(message);
 			
-			bStream = new ByteArrayOutputStream();
-	        oStream = new ObjectOutputStream(bStream);
-			oStream.writeObject(message);
-			
-	        data = bStream.toByteArray();
 	        System.out.println("[Send Thread] Sending message| size = " + data.length + ", seq# = " + message.getSeqNumber());
-	        packet = new DatagramPacket(data, data.length, destinationAddress, destinationPort);
+	        
+	        DatagramPacket packet = new DatagramPacket(data, data.length, destinationAddress, destinationPort);
 	        localSocket.send(packet);
-			
-			oStream.close();
 		}
 	}
 	
