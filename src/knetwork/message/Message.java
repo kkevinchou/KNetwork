@@ -28,5 +28,5 @@ public abstract class Message implements Serializable {
 		return seqNumber;
 	}
 	
-	public abstract  MessageType getMessageType();
+	public abstract MessageType getMessageType();
 }
