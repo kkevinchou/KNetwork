@@ -6,13 +6,14 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import knetwork.Constants;
+import knetwork.common.BaseNetworkingManager;
 import knetwork.common.ReceiveThread;
 import knetwork.common.SendThread;
 import knetwork.message.*;
 import knetwork.message.Message.MessageType;
 
 
-public class ClientNetworkManager {
+public class ClientNetworkManager extends BaseNetworkingManager {
 	private DatagramSocket socket;
 	private SendThread sendThread;
 	private ReceiveThread receiveThread;
