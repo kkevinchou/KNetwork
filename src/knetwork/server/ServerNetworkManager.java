@@ -7,27 +7,25 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import knetwork.Constants;
+import knetwork.common.BaseNetworkingManager;
 import knetwork.common.Helper;
 import knetwork.common.ReceiveThread;
 import knetwork.common.SendThread;
 import knetwork.message.*;
 import knetwork.message.Message.MessageType;
 
-public class ServerNetworkManager {
+public class ServerNetworkManager extends BaseNetworkingManager {
 	private DatagramSocket socket;
 	private ReceiveThread receiveThread;
 	private ConcurrentMap<Integer, SendThread> clientSendThreads;
-	private BlockingQueue<Message> inMessages;
 	
 	public ServerNetworkManager(int port) throws SocketException {
+		super(Constants.SERVER_IN_QUEUE_SIZE);
 		socket = new DatagramSocket(port);
-		inMessages = new ArrayBlockingQueue<Message>(Constants.SERVER_IN_QUEUE_SIZE);
 		clientSendThreads = new ConcurrentHashMap<Integer, SendThread>();
 	}
 	
@@ -97,10 +95,6 @@ public class ServerNetworkManager {
 			sendThread = entry.getValue();
 			sendThread.start();
 		}
-	}
-	
-	public Message recv() throws IOException, ClassNotFoundException {
-		return inMessages.poll();
 	}
 	
 	public void send(int clientId, Message m) {

@@ -2,8 +2,6 @@ package knetwork.client;
 
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 import knetwork.Constants;
 import knetwork.common.BaseNetworkingManager;
@@ -17,12 +15,11 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 	private DatagramSocket socket;
 	private SendThread sendThread;
 	private ReceiveThread receiveThread;
-	private BlockingQueue<Message> inMessages;
 	private int clientId;
 	
 	public ClientNetworkManager() throws SocketException {
+		super(Constants.CLIENT_IN_QUEUE_SIZE);
 		socket = new DatagramSocket();
-		inMessages = new ArrayBlockingQueue<Message>(Constants.CLIENT_IN_QUEUE_SIZE);
 	}
 	
 	public void register(String serverIp, int serverPort) throws InterruptedException {
@@ -55,14 +52,6 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 	public void send(Message m) {
 		m.setSenderId(clientId);
         sendThread.queueMessage(m);
-	}
-	
-	public Message recv() {
-		return inMessages.poll();
-	}
-	
-	public Message recv_blocking() throws InterruptedException {
-		return inMessages.take();
 	}
 	
 	public void disconnect() {
