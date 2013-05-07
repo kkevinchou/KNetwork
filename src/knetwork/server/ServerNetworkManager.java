@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,38 +22,46 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	private ReceiveThread receiveThread;
 	private ConcurrentMap<Integer, SendThread> clientSendThreads;
 	
-	public ServerNetworkManager(int port) throws SocketException {
+	public ServerNetworkManager() {
 		super(Constants.SERVER_IN_QUEUE_SIZE);
-		socket = new DatagramSocket(port);
-		clientSendThreads = new ConcurrentHashMap<Integer, SendThread>();
 	}
 	
-	public void waitForRegistrations(int numRegistrations) throws InterruptedException {
-		int nextClientId = 0;
-		int numCurrentRegistrations = 0;
-		
-		while (numCurrentRegistrations < numRegistrations) {
-			try {
-				boolean success = registerUser(nextClientId);
-				
-				if (success == true) {
-					nextClientId++;
-					numCurrentRegistrations++;
+	public boolean waitForRegistrations(int port, int numRegistrations) {
+		try {
+			socket = new DatagramSocket(port);
+			clientSendThreads = new ConcurrentHashMap<Integer, SendThread>();
+			
+			int nextClientId = 0;
+			int numCurrentRegistrations = 0;
+			
+			while (numCurrentRegistrations < numRegistrations) {
+				try {
+					boolean success = registerUser(nextClientId);
+					
+					if (success == true) {
+						nextClientId++;
+						numCurrentRegistrations++;
+					}
+				} catch(Exception e) {
+					System.out.println("[ServerNetworkManager] failed to register user: " + e);
 				}
-			} catch(Exception e) {
-				System.out.println("[ServerNetworkManager] failed to register user: " + e);
 			}
+			
+			startSendThreads();
+			
+			List<Integer> clientIds = new ArrayList<Integer>();
+			for (int i = 0; i < numRegistrations; i++) {
+				clientIds.add(i);
+			}
+			
+			receiveThread = new ReceiveThread(socket, inMessages);
+			receiveThread.start();
+			
+			return true;
+		} catch (Exception e) {
 		}
 		
-		startSendThreads();
-		
-		List<Integer> clientIds = new ArrayList<Integer>();
-		for (int i = 0; i < numRegistrations; i++) {
-			clientIds.add(i);
-		}
-		
-		receiveThread = new ReceiveThread(socket, inMessages);
-		receiveThread.start();
+		return false;
 	}
 
 	private boolean registerUser(int clientId) throws IOException {
