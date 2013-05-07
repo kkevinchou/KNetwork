@@ -54,6 +54,10 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 		
 		return false;
 	}
+	
+	protected void sendReliabilityAcknowledgement(Message m) {
+		send(new AckMessage(m));
+	}
 
 	public void send(Message m) {
 		m.setSenderId(clientId);
@@ -61,7 +65,31 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 	}
 	
 	public void send_reliable(Message m) {
+		m.reliable = true;
+		send(m);
+		reliableSendIds.add(m.getMessageId());
+	}
+
+	public Message recv() {
+		handleReliableReceive();
 		
+		Message m = inMessages.poll();
+		if (m != null && m.reliable) {
+			sendReliabilityAcknowledgement(m);
+		}
+		
+		return m;
+	}
+	
+	public Message recv_blocking() throws InterruptedException {
+		handleReliableReceive();
+		
+		Message m = inMessages.take();
+		if (m.reliable) {
+			sendReliabilityAcknowledgement(m);
+		}
+		
+		return m;
 	}
 	
 	public void disconnect() {

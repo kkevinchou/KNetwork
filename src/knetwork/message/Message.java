@@ -12,10 +12,12 @@ public abstract class Message implements Serializable {
 	private int messageId;
 	private int sendertId;
 	protected int seqNumber;
+	public boolean reliable;
 	
 	public Message() {
 		messageId = nextMessageId++;
 		seqNumber = nextSeqNumber++;
+		reliable = false;
 		nextSeqNumber = nextSeqNumber % Integer.MAX_VALUE;
 	}
 	

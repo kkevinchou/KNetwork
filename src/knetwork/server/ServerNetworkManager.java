@@ -104,10 +104,20 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		}
 	}
 	
+	protected void sendReliabilityAcknowledgement(Message m) {
+		send(m.getSenderId(), new AckMessage(m));
+	}
+	
 	public void send(int clientId, Message m) {
 		m.setSenderId(Constants.SERVER_SENDER_ID);
 		SendThread sendThread = clientSendThreads.get(clientId);
 		sendThread.queueMessage(m);
+	}
+	
+	public void send_reliable(int clientId, Message m) {
+		m.reliable = true;
+		send(clientId, m);
+		reliableSendIds.add(m.getMessageId());
 	}
 	
 	public void broadcast(Message m) {
@@ -118,6 +128,28 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 			sendThread = entry.getValue();
 			sendThread.queueMessage(m);
 		}
+	}
+
+	public Message recv() {
+		handleReliableReceive();
+		
+		Message m = inMessages.poll();
+		if (m != null && m.reliable) {
+			sendReliabilityAcknowledgement(m);
+		}
+		
+		return m;
+	}
+	
+	public Message recv_blocking() throws InterruptedException {
+		handleReliableReceive();
+		
+		Message m = inMessages.take();
+		if (m.reliable) {
+			sendReliabilityAcknowledgement(m);
+		}
+		
+		return m;
 	}
 	
 	public void disconnect() {
