@@ -13,6 +13,7 @@ import knetwork.Constants;
 import knetwork.common.BaseNetworkingManager;
 import knetwork.common.Helper;
 import knetwork.message.*;
+import knetwork.threads.ReceiveThread;
 import knetwork.threads.SendThread;
 
 public class ServerNetworkManager extends BaseNetworkingManager {
@@ -36,12 +37,12 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 				try {
 					boolean success = registerUser(nextClientId);
 					
-					if (success == true) {
+					if (success) {
 						nextClientId++;
 						numCurrentRegistrations++;
 					}
 				} catch(Exception e) {
-					System.out.println("[ServerNetworkManager] failed to register user: " + e);
+					Helper.log("[ServerNetworkManager] failed to register user: " + e);
 				}
 			}
 			
@@ -79,7 +80,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		clientSendThreads.put(clientId, new SendThread(clientIp, clientPort, socket));
 		
 		InetAddress clientAddress = InetAddress.getByName(clientIp);
-        System.out.println("[ServerNetworkManager] Registered User - " + clientAddress + " " + clientPort);
+		Helper.log("[ServerNetworkManager] Registered User - " + clientAddress + " " + clientPort);
         
         return true;
 	}

@@ -1,4 +1,4 @@
-package knetwork.server;
+package knetwork.threads;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -45,8 +45,9 @@ public class ReceiveThread extends Thread {
 			}
 			
 			if (message instanceof AckMessage) {
+				AckMessage ack = (AckMessage)message;
 				inAcknowledgements.add(message);
-				System.out.println("[Receive Thread] Received ACK");
+				Helper.log("Received ACK| for message " + ack.getAckMsgId());
 			} else {
 		        boolean messageOkay = false;
 				int senderId = message.getSenderId();
@@ -68,7 +69,7 @@ public class ReceiveThread extends Thread {
 				
 				if (messageOkay) {
 					inMessages.add(message);
-			        System.out.println("[Receive Thread] Received message [" + senderId + "]| " + "size = " + packet.getLength() + ", seq# = " + seqNumber);
+					Helper.log("Received Message| " + seqNumber);
 				}
 				
 			}
@@ -84,9 +85,9 @@ public class ReceiveThread extends Thread {
 		try {
 			main();
 		} catch (SocketException e) {
-//			System.out.println("[Receive Thread] " + e.toString());
+//			Helper.log("[Receive Thread] " + e.toString());
 		} catch (IOException e) {
-			System.out.println("[Receive Thread] " + e.toString());
+			Helper.log("[Receive Thread] " + e.toString());
 		}
 	}
 }

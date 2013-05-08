@@ -10,6 +10,7 @@ import java.util.concurrent.BlockingQueue;
 
 import knetwork.Constants;
 import knetwork.common.Helper;
+import knetwork.message.AckMessage;
 import knetwork.message.Message;
 
 
@@ -35,7 +36,14 @@ public class SendThread extends Thread {
 			Message message = outMessages.take();
 			byte[] data = Helper.convertMessageToByteArray(message);
 			
-	        System.out.println("[Send Thread] Sending message| size = " + data.length + ", seq# = " + message.getSeqNumber());
+			if (message instanceof AckMessage) {
+				AckMessage ack = (AckMessage)message;
+				Helper.log("Sent ACK| for message " + ack.getAckMsgId());
+			} else {
+//		        Helper.log("[Send Thread] Sending message| size = " + data.length + ", seq# = " + message.getSeqNumber());
+				Helper.log("Sent Message| " + message.getSeqNumber());
+			}
+			
 	        
 	        DatagramPacket packet = new DatagramPacket(data, data.length, destinationAddress, destinationPort);
 	        localSocket.send(packet);
@@ -55,11 +63,11 @@ public class SendThread extends Thread {
 		try {
 			main();
 		} catch (SocketException e) {
-//			System.out.println("[Send Thread] " + e.toString());
+//			Helper.log("[Send Thread] " + e.toString());
 		} catch (InterruptedException e) {
-//			System.out.println("[Send Thread] " + e.toString());
+//			Helper.log("[Send Thread] " + e.toString());
 		} catch (IOException e) {
-			System.out.println("[Send Thread] " + e.toString());
+			Helper.log("[Send Thread] " + e.toString());
 		}
 	}
 }

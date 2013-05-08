@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
+
+import knetwork.Constants;
 import knetwork.message.Message;
 
 public abstract class Helper {
@@ -40,5 +42,11 @@ public abstract class Helper {
 		}
         
         return bStream.toByteArray();
+	}
+	
+	public static void log(String s) {
+		if (Constants.DEBUG_MODE) {
+			System.out.println(s);
+		}
 	}
 }

@@ -4,8 +4,9 @@ import java.net.DatagramSocket;
 
 import knetwork.Constants;
 import knetwork.common.BaseNetworkingManager;
+import knetwork.common.Helper;
 import knetwork.message.*;
-import knetwork.server.ReceiveThread;
+import knetwork.threads.ReceiveThread;
 import knetwork.threads.SendThread;
 
 
@@ -37,15 +38,15 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 					m = recv_blocking();
 				} while (!(m instanceof RegistrationResponse));
 			} catch (InterruptedException e) {
-				System.out.println("[ClientNetworkManager] " + e.toString());
-				System.out.println("[ClientNetworkManager] Registration interrupted");
+				Helper.log("[ClientNetworkManager] " + e.toString());
+				Helper.log("[ClientNetworkManager] Registration interrupted");
 				throw e;
 			}
 			
 			RegistrationResponse regResponse = (RegistrationResponse)m;
 			clientId = regResponse.getRegisteredClientId();
 			
-			System.out.println("[ClientNetworkManager] Registered with clientId = " + clientId);
+			Helper.log("[ClientNetworkManager] Registered with clientId = " + clientId);
 			return true;
 		} catch (Exception e) {
 		}
