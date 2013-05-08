@@ -54,7 +54,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 				clientIds.add(i);
 			}
 			
-			receiveThread = new ReceiveThread(socket, inMessages);
+			receiveThread = new ReceiveThread(socket, inMessages, inAcknowledgements);
 			receiveThread.start();
 			
 			return true;
@@ -104,20 +104,22 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		}
 	}
 	
-	protected void sendReliabilityAcknowledgement(Message m) {
+	protected void sendMessageAcknowledgement(Message m) {
 		send(m.getSenderId(), new AckMessage(m));
 	}
 	
 	public void send(int clientId, Message m) {
+		m.setReceiverId(clientId);
 		m.setSenderId(Constants.SERVER_SENDER_ID);
 		SendThread sendThread = clientSendThreads.get(clientId);
 		sendThread.queueMessage(m);
 	}
 	
 	public void send_reliable(int clientId, Message m) {
+		m.setReceiverId(clientId);
 		m.reliable = true;
 		send(clientId, m);
-		reliableSendIds.add(m.getMessageId());
+		outAcknowledgements.put(m.getMessageId(), m);
 	}
 	
 	public void broadcast(Message m) {
@@ -128,28 +130,6 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 			sendThread = entry.getValue();
 			sendThread.queueMessage(m);
 		}
-	}
-
-	public Message recv() {
-		handleReliableReceive();
-		
-		Message m = inMessages.poll();
-		if (m != null && m.reliable) {
-			sendReliabilityAcknowledgement(m);
-		}
-		
-		return m;
-	}
-	
-	public Message recv_blocking() throws InterruptedException {
-		handleReliableReceive();
-		
-		Message m = inMessages.take();
-		if (m.reliable) {
-			sendReliabilityAcknowledgement(m);
-		}
-		
-		return m;
 	}
 	
 	public void disconnect() {
@@ -169,5 +149,9 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	protected void reSendReliableMessage(Message m) {
+		send(m.getReceiverId(), m);
 	}
 }

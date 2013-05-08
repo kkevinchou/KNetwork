@@ -7,4 +7,5 @@ public class Constants {
 	public static final int CLIENT_IN_QUEUE_SIZE = 1000;
 	public static final int MAX_UDP_BYTE_READ_SIZE = 1400;
 	public static final int SERVER_SENDER_ID = -1;
+	public static final long RELIABILITY_ACKNOWLEDGEMENT_TIMEOUT = 10 * 1000;
 }

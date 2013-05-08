@@ -28,7 +28,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 			sendThread.queueMessage(new RegistrationRequest());
 			sendThread.start();
 
-			receiveThread = new ReceiveThread(socket, inMessages);
+			receiveThread = new ReceiveThread(socket, inMessages, inAcknowledgements);
 			receiveThread.start();
 			
 			Message m = null;
@@ -55,7 +55,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 		return false;
 	}
 	
-	protected void sendReliabilityAcknowledgement(Message m) {
+	protected void sendMessageAcknowledgement(Message m) {
 		send(new AckMessage(m));
 	}
 
@@ -67,29 +67,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 	public void send_reliable(Message m) {
 		m.reliable = true;
 		send(m);
-		reliableSendIds.add(m.getMessageId());
-	}
-
-	public Message recv() {
-		handleReliableReceive();
-		
-		Message m = inMessages.poll();
-		if (m != null && m.reliable) {
-			sendReliabilityAcknowledgement(m);
-		}
-		
-		return m;
-	}
-	
-	public Message recv_blocking() throws InterruptedException {
-		handleReliableReceive();
-		
-		Message m = inMessages.take();
-		if (m.reliable) {
-			sendReliabilityAcknowledgement(m);
-		}
-		
-		return m;
+		outAcknowledgements.put(m.getMessageId(), m);
 	}
 	
 	public void disconnect() {
@@ -104,5 +82,9 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 		}
 		
 		socket.close();
+	}
+
+	protected void reSendReliableMessage(Message m) {
+		send(m);
 	}
 }
