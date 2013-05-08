@@ -29,7 +29,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 			socket = new DatagramSocket(port);
 			clientSendThreads = new ConcurrentHashMap<Integer, SendThread>();
 			
-			int nextClientId = 0;
+			int nextClientId = 1;
 			int numCurrentRegistrations = 0;
 			
 			while (numCurrentRegistrations < numRegistrations) {
