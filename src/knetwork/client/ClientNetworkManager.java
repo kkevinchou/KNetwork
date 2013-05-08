@@ -85,6 +85,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 	}
 
 	protected void reSendReliableMessage(Message m) {
+		System.out.println("CLIENT RESEND");
 		send(m);
 	}
 }

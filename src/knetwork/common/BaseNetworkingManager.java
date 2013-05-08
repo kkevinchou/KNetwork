@@ -33,11 +33,12 @@ public abstract class BaseNetworkingManager {
 				  
 				  Iterator<Message> iter = inAcknowledgements.iterator();
 				  while (iter.hasNext()) {
-					  AckMessage message = (AckMessage)iter.next(); // must be called before you can call i.remove()
+					  AckMessage message = (AckMessage)iter.next();
 					  outAcknowledgements.remove(message.getAckMsgId());
 					  iter.remove();
 				  }
 				  
+				  System.out.println("NUM OUT ACKS " + outAcknowledgements.size());
 				  for (Message m : outAcknowledgements.values()) {
 					  reSendReliableMessage(m);
 				  }
@@ -50,7 +51,7 @@ public abstract class BaseNetworkingManager {
 	
 	private void acknowledgeReliableMessage(Message message) {
 		if (message != null && message.reliable) {
-			sendMessageAcknowledgement(message);
+//			sendMessageAcknowledgement(message);
 		}
 	}
 

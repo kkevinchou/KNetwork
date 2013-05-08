@@ -47,6 +47,7 @@ public class SendThread extends Thread {
 	}
 	
 	public void queueMessage(Message m) {
+		System.out.println("SEND THREAD - QUEUE");
 		outMessages.add(m);
 	}
 	

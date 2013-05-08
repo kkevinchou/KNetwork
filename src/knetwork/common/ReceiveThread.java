@@ -48,17 +48,26 @@ public class ReceiveThread extends Thread {
 				inAcknowledgements.add(message);
 				System.out.println("[Receive Thread] Received ACK");
 			} else {
-				if (message.reliable && reliablyReceivedMessages.contains(message)) {
-					// Received a duplicate reliable message
+		        boolean messageOkay = false;
+				int senderId = message.getSenderId();
+		        int seqNumber = message.getSeqNumber();
+		        Integer prevSeqNumber = senderSequenceNumbers.get(senderId);
+		        
+				if (message.reliable) {
+					if (!reliablyReceivedMessages.contains(message)) {
+						messageOkay = true;
+						reliablyReceivedMessages.add(message);
+					}
 				} else {
-					int senderId = message.getSenderId();
-			        int seqNumber = message.getSeqNumber();
-			        
-			        // For now, we don't check for valid sequence numbers
-			        // I haven't thought of a good way to handle wrapping around yet
-			        
-			        senderSequenceNumbers.put(senderId, seqNumber);
-			        inMessages.add(message);
+			        // TODO: Handling overflowing sequence numbers
+					if (prevSeqNumber == null || prevSeqNumber.intValue() < seqNumber) {
+						messageOkay = true;
+				        senderSequenceNumbers.put(senderId, seqNumber);
+					}
+				}
+				
+				if (messageOkay) {
+					inMessages.add(message);
 			        System.out.println("[Receive Thread] Received message [" + senderId + "]| " + "size = " + packet.getLength() + ", seq# = " + seqNumber);
 				}
 				
