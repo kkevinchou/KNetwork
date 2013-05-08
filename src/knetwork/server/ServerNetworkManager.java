@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -108,6 +109,10 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	}
 	
 	public void send(Message m) {
+		if (m.getReceiverId() == Constants.SERVER_SENDER_ID) {
+			System.out.println("WARNING - SENDING MESSAGE FROM SERVER TO SERVER");
+		}
+		
 		m.setSenderId(Constants.SERVER_SENDER_ID);
 		SendThread sendThread = clientSendThreads.get(m.getReceiverId());
 		sendThread.queueMessage(m);
@@ -122,7 +127,11 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	public void broadcast(Message m) {
 		m.setSenderId(Constants.SERVER_SENDER_ID);
 		
-		for (SendThread sendThread : clientSendThreads.values()) {
+		for (Map.Entry<Integer, SendThread> entry : clientSendThreads.entrySet()) {
+			int clientId = entry.getKey();
+			SendThread sendThread = entry.getValue();
+			
+			m.setReceiverId(clientId);
 			sendThread.queueMessage(m);
 		}
 	}

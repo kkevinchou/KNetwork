@@ -38,6 +38,8 @@ public class ReceiveThread extends Thread {
 			byte[] data = new byte[Constants.MAX_UDP_BYTE_READ_SIZE];
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			localSocket.receive(packet);
+			
+			Helper.log("RECEIVE");
 
 			Message message = Helper.getMessageFromPacket(packet);
 			if (message == null) {
@@ -69,7 +71,7 @@ public class ReceiveThread extends Thread {
 				
 				if (messageOkay) {
 					inMessages.add(message);
-					Helper.log("Received Message| " + seqNumber);
+					Helper.log("--- RECEIVE [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId());
 				}
 				
 			}

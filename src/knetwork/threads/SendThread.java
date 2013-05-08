@@ -41,7 +41,7 @@ public class SendThread extends Thread {
 				Helper.log("Sent ACK| for message " + ack.getAckMsgId());
 			} else {
 //		        Helper.log("[Send Thread] Sending message| size = " + data.length + ", seq# = " + message.getSeqNumber());
-				Helper.log("Sent Message| " + message.getSeqNumber());
+				Helper.log("--- SEND [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId());
 			}
 			
 	        

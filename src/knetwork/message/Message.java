@@ -44,9 +44,9 @@ public abstract class Message implements Serializable {
 		return receiverId;
 	}
 
-//	public void setReceiverId(int receiverId) {
-//		this.receiverId = receiverId;
-//	}
+	public void setReceiverId(int receiverId) {
+		this.receiverId = receiverId;
+	}
 	
 	public int getSeqNumber() {
 		return seqNumber;
