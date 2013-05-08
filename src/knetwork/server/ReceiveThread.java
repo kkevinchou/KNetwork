@@ -1,4 +1,4 @@
-package knetwork.common;
+package knetwork.server;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
 import knetwork.Constants;
+import knetwork.common.Helper;
 import knetwork.message.*;
 import knetwork.message.Message.MessageType;
 

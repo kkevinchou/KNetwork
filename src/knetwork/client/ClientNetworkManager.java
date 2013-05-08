@@ -4,10 +4,10 @@ import java.net.DatagramSocket;
 
 import knetwork.Constants;
 import knetwork.common.BaseNetworkingManager;
-import knetwork.common.ReceiveThread;
-import knetwork.common.SendThread;
 import knetwork.message.*;
 import knetwork.message.Message.MessageType;
+import knetwork.server.ReceiveThread;
+import knetwork.threads.SendThread;
 
 
 public class ClientNetworkManager extends BaseNetworkingManager {

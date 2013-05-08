@@ -12,10 +12,9 @@ import java.util.concurrent.ConcurrentMap;
 import knetwork.Constants;
 import knetwork.common.BaseNetworkingManager;
 import knetwork.common.Helper;
-import knetwork.common.ReceiveThread;
-import knetwork.common.SendThread;
 import knetwork.message.*;
 import knetwork.message.Message.MessageType;
+import knetwork.threads.SendThread;
 
 public class ServerNetworkManager extends BaseNetworkingManager {
 	private DatagramSocket socket;

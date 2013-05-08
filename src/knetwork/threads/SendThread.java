@@ -1,4 +1,4 @@
-package knetwork.common;
+package knetwork.threads;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -9,6 +9,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import knetwork.Constants;
+import knetwork.common.Helper;
 import knetwork.message.Message;
 
 
@@ -47,7 +48,6 @@ public class SendThread extends Thread {
 	}
 	
 	public void queueMessage(Message m) {
-		System.out.println("SEND THREAD - QUEUE");
 		outMessages.add(m);
 	}
 	

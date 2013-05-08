@@ -29,8 +29,6 @@ public abstract class BaseNetworkingManager {
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask() {
 			  public void run() {
-				  System.out.println("NUM ACKS " + inAcknowledgements.size());
-				  
 				  Iterator<Message> iter = inAcknowledgements.iterator();
 				  while (iter.hasNext()) {
 					  AckMessage message = (AckMessage)iter.next();
@@ -38,7 +36,6 @@ public abstract class BaseNetworkingManager {
 					  iter.remove();
 				  }
 				  
-				  System.out.println("NUM OUT ACKS " + outAcknowledgements.size());
 				  for (Message m : outAcknowledgements.values()) {
 					  reSendReliableMessage(m);
 				  }
@@ -51,7 +48,7 @@ public abstract class BaseNetworkingManager {
 	
 	private void acknowledgeReliableMessage(Message message) {
 		if (message != null && message.reliable) {
-//			sendMessageAcknowledgement(message);
+			sendMessageAcknowledgement(message);
 		}
 	}
 
