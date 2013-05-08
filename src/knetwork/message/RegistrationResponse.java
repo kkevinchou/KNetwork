@@ -11,8 +11,4 @@ public class RegistrationResponse extends Message {
 	public int getRegisteredClientId() {
 		return this.registeredClientId;
 	}
-	
-	public MessageType getMessageType() {
-		return MessageType.RegistrationResponse;
-	}
 }

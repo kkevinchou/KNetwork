@@ -13,7 +13,6 @@ import java.util.concurrent.BlockingQueue;
 import knetwork.Constants;
 import knetwork.common.Helper;
 import knetwork.message.*;
-import knetwork.message.Message.MessageType;
 
 public class ReceiveThread extends Thread {
 	private BlockingQueue<Message> inMessages;
@@ -45,7 +44,7 @@ public class ReceiveThread extends Thread {
 				continue;
 			}
 			
-			if (message.getMessageType() == MessageType.Acknowledge) {
+			if (message instanceof AckMessage) {
 				inAcknowledgements.add(message);
 				System.out.println("[Receive Thread] Received ACK");
 			} else {

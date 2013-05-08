@@ -14,7 +14,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import knetwork.Constants;
 import knetwork.message.AckMessage;
 import knetwork.message.Message;
-import knetwork.message.Message.MessageType;
 
 public abstract class BaseNetworkingManager {
 	protected BlockingQueue<Message> inMessages;
@@ -29,6 +28,7 @@ public abstract class BaseNetworkingManager {
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask() {
 			  public void run() {
+				  System.out.println("NUM IN ACK " + inAcknowledgements.size());
 				  Iterator<Message> iter = inAcknowledgements.iterator();
 				  while (iter.hasNext()) {
 					  AckMessage message = (AckMessage)iter.next();
@@ -36,6 +36,7 @@ public abstract class BaseNetworkingManager {
 					  iter.remove();
 				  }
 				  
+				  System.out.println("NUM OUT ACK " + outAcknowledgements.size());
 				  for (Message m : outAcknowledgements.values()) {
 					  reSendReliableMessage(m);
 				  }

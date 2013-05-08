@@ -13,7 +13,6 @@ import knetwork.Constants;
 import knetwork.common.BaseNetworkingManager;
 import knetwork.common.Helper;
 import knetwork.message.*;
-import knetwork.message.Message.MessageType;
 import knetwork.threads.SendThread;
 
 public class ServerNetworkManager extends BaseNetworkingManager {
@@ -69,7 +68,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		socket.receive(recvPacket);
 		
 		Message message = Helper.getMessageFromPacket(recvPacket);
-		if (message == null || message.getMessageType() != MessageType.RegistrationRequest) {
+		if (message == null || !(message instanceof RegistrationRequest)) {
 			return false;
 		}
     	
@@ -104,29 +103,25 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	}
 	
 	protected void sendMessageAcknowledgement(Message m) {
-		send(m.getSenderId(), new AckMessage(m));
+		send(new AckMessage(m));
 	}
 	
-	public void send(int clientId, Message m) {
-		m.setReceiverId(clientId);
+	public void send(Message m) {
 		m.setSenderId(Constants.SERVER_SENDER_ID);
-		SendThread sendThread = clientSendThreads.get(clientId);
+		SendThread sendThread = clientSendThreads.get(m.getReceiverId());
 		sendThread.queueMessage(m);
 	}
 	
-	public void send_reliable(int clientId, Message m) {
-		m.setReceiverId(clientId);
+	public void send_reliable(Message m) {
 		m.reliable = true;
-		send(clientId, m);
+		send(m);
 		outAcknowledgements.put(m.getMessageId(), m);
 	}
 	
 	public void broadcast(Message m) {
 		m.setSenderId(Constants.SERVER_SENDER_ID);
 		
-		SendThread sendThread = null;
-		for (ConcurrentMap.Entry<Integer, SendThread> entry : clientSendThreads.entrySet()) {
-			sendThread = entry.getValue();
+		for (SendThread sendThread : clientSendThreads.values()) {
 			sendThread.queueMessage(m);
 		}
 	}
@@ -151,6 +146,6 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	}
 	
 	protected void reSendReliableMessage(Message m) {
-		send(m.getReceiverId(), m);
+		send(m);
 	}
 }

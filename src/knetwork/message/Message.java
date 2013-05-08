@@ -6,8 +6,6 @@ import knetwork.Constants;
 
 public abstract class Message implements Serializable {
 	private static final long serialVersionUID = -4346009386669442875L;
-
-	public enum MessageType { RegistrationResponse, RegistrationRequest, Big, Test, Acknowledge };
 	
 	public static int nextMessageId = 0;
 	public static int nextSeqNumber = 0;
@@ -17,12 +15,21 @@ public abstract class Message implements Serializable {
 	protected int seqNumber;
 	public boolean reliable;
 	
-	public Message() {
+	private void init() {
 		receiverId = Constants.SERVER_SENDER_ID;
 		messageId = nextMessageId++;
 		seqNumber = nextSeqNumber++;
 		reliable = false;
 		nextSeqNumber = nextSeqNumber % Integer.MAX_VALUE;
+	}
+	
+	public Message() {
+		init();
+	}
+	
+	public Message(int receiverId) {
+		init();
+		this.receiverId = receiverId; 
 	}
 	
 	public int getSenderId() {
@@ -37,9 +44,9 @@ public abstract class Message implements Serializable {
 		return receiverId;
 	}
 
-	public void setReceiverId(int receiverId) {
-		this.receiverId = receiverId;
-	}
+//	public void setReceiverId(int receiverId) {
+//		this.receiverId = receiverId;
+//	}
 	
 	public int getSeqNumber() {
 		return seqNumber;
@@ -48,6 +55,4 @@ public abstract class Message implements Serializable {
 	public int getMessageId() {
 		return messageId;
 	}
-	
-	public abstract MessageType getMessageType();
 }

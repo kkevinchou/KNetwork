@@ -8,9 +8,9 @@ public class BigMessage extends Message {
 		super();
 		bytes = new byte[numBytes];
 	}
-
-	public MessageType getMessageType() {
-		return MessageType.Big;
+	
+	public byte[] getBytes() {
+		return bytes;
 	}
 
 }

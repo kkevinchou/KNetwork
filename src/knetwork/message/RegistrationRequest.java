@@ -5,8 +5,4 @@ public class RegistrationRequest extends Message {
 	
 	public RegistrationRequest() {
 	}
-
-	public MessageType getMessageType() {
-		return MessageType.RegistrationRequest;
-	}
 }

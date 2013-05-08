@@ -16,8 +16,4 @@ public class TestMessage extends Message implements Serializable {
 		super();
 		this.val = val;
 	}
-
-	public MessageType getMessageType() {
-		return MessageType.Test;
-	}
 }

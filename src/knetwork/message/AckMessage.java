@@ -8,15 +8,11 @@ public class AckMessage extends Message implements Serializable {
 	private int ackMsgId;
 	
 	public AckMessage(Message message) {
-		super();
+		super(message.getSenderId());
 		ackMsgId = message.getMessageId();
 	}
 	
 	public int getAckMsgId() {
 		return ackMsgId;
-	}
-
-	public MessageType getMessageType() {
-		return MessageType.Acknowledge;
 	}
 }

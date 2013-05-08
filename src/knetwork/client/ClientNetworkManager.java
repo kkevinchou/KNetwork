@@ -5,7 +5,6 @@ import java.net.DatagramSocket;
 import knetwork.Constants;
 import knetwork.common.BaseNetworkingManager;
 import knetwork.message.*;
-import knetwork.message.Message.MessageType;
 import knetwork.server.ReceiveThread;
 import knetwork.threads.SendThread;
 
@@ -34,10 +33,9 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 			Message m = null;
 			
 			try {
-				m = recv_blocking();
-				while (m.getMessageType() != MessageType.RegistrationResponse) {
+				do {
 					m = recv_blocking();
-				}
+				} while (!(m instanceof RegistrationResponse));
 			} catch (InterruptedException e) {
 				System.out.println("[ClientNetworkManager] " + e.toString());
 				System.out.println("[ClientNetworkManager] Registration interrupted");
@@ -85,7 +83,6 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 	}
 
 	protected void reSendReliableMessage(Message m) {
-		System.out.println("CLIENT RESEND");
 		send(m);
 	}
 }
