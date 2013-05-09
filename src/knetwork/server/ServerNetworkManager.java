@@ -124,6 +124,16 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		outAcknowledgements.put(m.getMessageId(), m);
 	}
 	
+	public void send(int clientId, Message m) {
+		m.setReceiverId(clientId);
+		send(m);
+	}
+	
+	public void send_reliable(int clientId, Message m) {
+		m.setReceiverId(clientId);
+		send_reliable(m);
+	}
+	
 	public void broadcast(Message m) {
 		m.setSenderId(Constants.SERVER_SENDER_ID);
 		

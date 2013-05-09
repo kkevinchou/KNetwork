@@ -43,8 +43,8 @@ public class SendThread extends Thread {
 //		        Helper.log("[Send Thread] Sending message| size = " + data.length + ", seq# = " + message.getSeqNumber());
 				Helper.log("--- SEND [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId());
 			}
-			
 	        
+//			Helper.log("Target IP: " + destinationAddress.getHostAddress() + ", " + destinationPort);
 	        DatagramPacket packet = new DatagramPacket(data, data.length, destinationAddress, destinationPort);
 	        localSocket.send(packet);
 		}
