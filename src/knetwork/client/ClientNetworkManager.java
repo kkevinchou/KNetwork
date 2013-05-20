@@ -69,7 +69,9 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 		outAcknowledgements.put(m.getMessageId(), m);
 	}
 	
+	@Override
 	public void disconnect() {
+		super.disconnect();
 		receiveThread.interrupt();
 		sendThread.interrupt();
 		

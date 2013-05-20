@@ -146,7 +146,9 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		}
 	}
 	
+	@Override
 	public void disconnect() {
+		super.disconnect();
 		receiveThread.interrupt();
 		
 		for (ConcurrentMap.Entry<Integer, SendThread> entry : clientSendThreads.entrySet()) {

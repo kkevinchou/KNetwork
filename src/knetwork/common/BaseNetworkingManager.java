@@ -16,14 +16,15 @@ public abstract class BaseNetworkingManager {
 	protected BlockingQueue<Message> inMessages;
 	protected BlockingQueue<Message> inAcknowledgements;
 	protected Map<Integer, Message> outAcknowledgements;
+	private Timer ackTimer;
 	
 	protected BaseNetworkingManager(int inQueueSize) {
 		inMessages = new ArrayBlockingQueue<Message>(inQueueSize);
 		inAcknowledgements = new ArrayBlockingQueue<Message>(inQueueSize);
 		outAcknowledgements = new HashMap<Integer, Message>();
 		
-		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(new TimerTask() {
+		ackTimer = new Timer();
+		ackTimer.scheduleAtFixedRate(new TimerTask() {
 			  public void run() {
 //				  Helper.log("NUM IN ACK " + inAcknowledgements.size());
 				  Iterator<Message> iter = inAcknowledgements.iterator();
@@ -62,5 +63,9 @@ public abstract class BaseNetworkingManager {
 		acknowledgeReliableMessage(message);
 		
 		return message;
+	}
+	
+	public void disconnect() {
+		ackTimer.cancel();
 	}
 }
