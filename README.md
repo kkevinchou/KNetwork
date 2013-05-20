@@ -1,7 +1,7 @@
 KNetwork
 ========
 
-A Networking library (UDP) intended for games using a Client/Server model.
+    A UDP Networking library intended for games using a Client/Server model
 
 Features
 ========
@@ -15,3 +15,8 @@ Features
     
     The ability to send reliable messages
     If the message is dropped during transmission it is resent until an acknowledgement is received
+    
+TODO
+========
+
+    Ensure message ordering for reliable messages
