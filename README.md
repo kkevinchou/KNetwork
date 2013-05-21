@@ -15,7 +15,11 @@ Features
     
     The ability to send reliable messages
     If the message is dropped during transmission it is resent until an acknowledgement is received
-    
+   
+DOCUMENTATION
+========
+	Message types below 100 are reserved for internal use
+	 
 TODO
 ========
 
