@@ -25,8 +25,10 @@ MESSAGE FORMAT
 	4 bytes - Message Type
 	4 bytes - Sender Id
 	4 bytes - Receiver Id
+	Message specific data
+	
 TODO
 ========
 
     Ensure message ordering for reliable messages
-    Allow the sending/receiving raw byte arrays.  Sending a serialized object can take up a lot of bandwidth
+    Allow the sending/receiving raw byte arrays.  Serialized objects are too large to contain in a single packet.
