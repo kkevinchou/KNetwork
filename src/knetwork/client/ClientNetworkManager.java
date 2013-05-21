@@ -58,15 +58,15 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 		send(new AckMessage(m));
 	}
 
-	public void send(Message m) {
-		m.setSenderId(clientId);
-        sendThread.queueMessage(m);
+	public void send(Message message) {
+		message.setSenderId(clientId);
+        sendThread.queueMessage(message);
 	}
 	
-	public void send_reliable(Message m) {
-		m.reliable = true;
-		send(m);
-		outAcknowledgements.put(m.getMessageId(), m);
+	public void send_reliable(Message message) {
+		message.reliable = true;
+		send(message);
+		outAcknowledgements.put(message.getMessageId(), message);
 	}
 	
 	@Override
@@ -85,7 +85,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 		socket.close();
 	}
 
-	protected void reSendReliableMessage(Message m) {
-		send(m);
+	protected void reSendReliableMessage(Message message) {
+		send(message);
 	}
 }

@@ -20,12 +20,23 @@ DOCUMENTATION
 ========
 	Message types below 100 are reserved for internal use
 
-MESSAGE FORMAT
+MESSAGE HEADER
 ========
 	4 bytes - Message Type
+	4 bytes - Message Id
+	4 bytes - Sequence Number
 	4 bytes - Sender Id
 	4 bytes - Receiver Id
-	Message specific data
+	4 bytes - Reliable
+	
+REGISTRATION REQUEST
+========
+
+REGISTRATION RESPONSE
+========
+	
+ACKNOWLEDGEMENT
+========
 	
 TODO
 ========

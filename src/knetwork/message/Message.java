@@ -9,11 +9,31 @@ public abstract class Message implements Serializable {
 	
 	public static int nextMessageId = 0;
 	public static int nextSeqNumber = 0;
+	
 	private int messageId;
 	private int sendertId;
 	private int receiverId;
-	protected int seqNumber;
+	private int seqNumber;
+
+	protected Byte[] bytes;
 	public boolean reliable;
+	
+	private void fillHeaderBytes() {
+	}
+	
+	protected void fillMessageSpecificBytes() {
+	}
+	
+	public byte[] getRawBytes() {
+		fillHeaderBytes();
+		fillMessageSpecificBytes();
+		
+		byte[] rawBytes = new byte[bytes.length];
+		for (int i = 0; i < bytes.length; i++) {
+			rawBytes[i] = bytes[i].byteValue();
+		}
+		return rawBytes;
+	}
 	
 	private void init() {
 		receiverId = Constants.SERVER_SENDER_ID;

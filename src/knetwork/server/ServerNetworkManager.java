@@ -118,31 +118,31 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		sendThread.queueMessage(m);
 	}
 	
-	public void send_reliable(Message m) {
-		m.reliable = true;
-		send(m);
-		outAcknowledgements.put(m.getMessageId(), m);
+	public void send_reliable(Message message) {
+		message.reliable = true;
+		send(message);
+		outAcknowledgements.put(message.getMessageId(), message);
 	}
 	
-	public void send(int clientId, Message m) {
-		m.setReceiverId(clientId);
-		send(m);
+	public void send(int clientId, Message message) {
+		message.setReceiverId(clientId);
+		send(message);
 	}
 	
-	public void send_reliable(int clientId, Message m) {
-		m.setReceiverId(clientId);
-		send_reliable(m);
+	public void send_reliable(int clientId, Message message) {
+		message.setReceiverId(clientId);
+		send_reliable(message);
 	}
 	
-	public void broadcast(Message m) {
-		m.setSenderId(Constants.SERVER_SENDER_ID);
+	public void broadcast(Message message) {
+		message.setSenderId(Constants.SERVER_SENDER_ID);
 		
 		for (Map.Entry<Integer, SendThread> entry : clientSendThreads.entrySet()) {
 			int clientId = entry.getKey();
 			SendThread sendThread = entry.getValue();
 			
-			m.setReceiverId(clientId);
-			sendThread.queueMessage(m);
+			message.setReceiverId(clientId);
+			sendThread.queueMessage(message);
 		}
 	}
 	
@@ -167,7 +167,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		}
 	}
 	
-	protected void reSendReliableMessage(Message m) {
-		send(m);
+	protected void reSendReliableMessage(Message message) {
+		send(message);
 	}
 }
