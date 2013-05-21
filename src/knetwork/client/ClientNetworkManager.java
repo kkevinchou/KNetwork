@@ -64,7 +64,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 	}
 	
 	public void send_reliable(Message message) {
-		message.reliable = true;
+		message.setReliable(true);
 		send(message);
 		outAcknowledgements.put(message.getMessageId(), message);
 	}

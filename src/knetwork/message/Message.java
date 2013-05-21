@@ -16,17 +16,17 @@ public abstract class Message implements Serializable {
 	private int seqNumber;
 
 	protected Byte[] bytes;
-	public boolean reliable;
-	
+	private boolean reliable;
+
 	private void fillHeaderBytes() {
 	}
 	
-	protected void fillMessageSpecificBytes() {
+	protected void fillMessageBytes() {
 	}
 	
 	public byte[] getRawBytes() {
 		fillHeaderBytes();
-		fillMessageSpecificBytes();
+		fillMessageBytes();
 		
 		byte[] rawBytes = new byte[bytes.length];
 		for (int i = 0; i < bytes.length; i++) {
@@ -62,6 +62,14 @@ public abstract class Message implements Serializable {
 	
 	public int getReceiverId() {
 		return receiverId;
+	}
+	
+	public boolean isReliable() {
+		return reliable;
+	}
+
+	public void setReliable(boolean reliable) {
+		this.reliable = reliable;
 	}
 
 	public void setReceiverId(int receiverId) {

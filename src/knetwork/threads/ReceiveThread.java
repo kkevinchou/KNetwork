@@ -55,7 +55,7 @@ public class ReceiveThread extends Thread {
 		        int seqNumber = message.getSeqNumber();
 		        Integer prevSeqNumber = senderSequenceNumbers.get(senderId);
 		        
-				if (message.reliable) {
+				if (message.isReliable()) {
 					if (!reliablyReceivedMessages.contains(message)) {
 						messageOkay = true;
 						reliablyReceivedMessages.add(message);
