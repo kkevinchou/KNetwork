@@ -9,5 +9,5 @@ public class Constants {
 	public static final int SERVER_SENDER_ID = 0;
 	public static final long ACKNOWLEDGEMENT_TIMEOUT = 10 * 1000;
 	
-	public static final boolean DEBUG_MODE = false;
+	public static final boolean DEBUG_MODE = true;
 }

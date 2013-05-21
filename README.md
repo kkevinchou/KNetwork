@@ -19,7 +19,12 @@ Features
 DOCUMENTATION
 ========
 	Message types below 100 are reserved for internal use
-	 
+
+MESSAGE FORMAT
+========
+	4 bytes - Message Type
+	4 bytes - Sender Id
+	4 bytes - Receiver Id
 TODO
 ========
 

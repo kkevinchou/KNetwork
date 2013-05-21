@@ -70,7 +70,7 @@ public class ReceiveThread extends Thread {
 				
 				if (messageOkay) {
 					inMessages.add(message);
-					Helper.log("--- RECEIVE [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId());
+					Helper.log("--- RECEIVE [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [SIZE: " + packet.getLength() + "]");
 				}
 			}
 		}
