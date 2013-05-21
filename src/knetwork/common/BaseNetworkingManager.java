@@ -46,7 +46,7 @@ public abstract class BaseNetworkingManager {
 	protected abstract void sendMessageAcknowledgement(Message m);
 	
 	private void acknowledgeReliableMessage(Message message) {
-		if (message != null && message.reliable) {
+		if (message != null && message.isReliable()) {
 			sendMessageAcknowledgement(message);
 		}
 	}
