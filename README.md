@@ -20,3 +20,4 @@ TODO
 ========
 
     Ensure message ordering for reliable messages
+    Allow the sending/receiving raw byte arrays.  Sending a serialized object can take up a lot of bandwidth
