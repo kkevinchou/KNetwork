@@ -14,13 +14,9 @@ Features
     Server sending a message to a single client
     
     The ability to send reliable messages
-    If the message is dropped during transmission it is resent until an acknowledgement is received
-   
-DOCUMENTATION
-========
-	Message types below 100 are reserved for internal use
+    If the message is dropped during transmission (i.e. timesout) it is resent until an acknowledgement is received
 
-MESSAGE HEADER
+MESSAGE FOOTER
 ========
 	4 bytes - Message Id
 	4 bytes - Sequence Number
@@ -28,19 +24,8 @@ MESSAGE HEADER
 	4 bytes - Receiver Id
 	4 bytes - Reliable
 	
-	4 bytes - Message Type
-	
-REGISTRATION REQUEST
-========
-
-REGISTRATION RESPONSE
-========
-	
-ACKNOWLEDGEMENT
-========
-	
 TODO
 ========
 
     Ensure message ordering for reliable messages
-    Allow the sending/receiving raw byte arrays.  Serialized objects are too large to contain in a single packet.
+    Handling registration requests/responses being dropped
