@@ -1,4 +1,4 @@
-package knetwork.threads;
+package knetwork.common;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -11,8 +11,6 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
 import knetwork.Constants;
-import knetwork.common.BaseNetworkingManager;
-import knetwork.common.Helper;
 import knetwork.message.*;
 
 public class ReceiveThread extends Thread {

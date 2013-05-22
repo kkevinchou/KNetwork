@@ -1,22 +1,19 @@
-package knetwork.server;
+package knetwork.managers;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import knetwork.Constants;
 import knetwork.common.BaseNetworkingManager;
 import knetwork.common.Helper;
+import knetwork.common.ReceiveThread;
+import knetwork.common.SendThread;
 import knetwork.message.*;
-import knetwork.threads.ReceiveThread;
-import knetwork.threads.SendThread;
 
 public class ServerNetworkManager extends BaseNetworkingManager {
 	private DatagramSocket socket;
