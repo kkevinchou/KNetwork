@@ -1,13 +1,18 @@
-import knetwork.message2.Message2;
+
+import knetwork.message.Message;
+import knetwork.message.MessageTypes.MessageType;
+import knetwork.message.TestMessage;
 
 
 public class Test {
 
 	public static void main(String[] args) {
-		Message2 message = new Message2();
-		byte[] bytes = message.getRawBytes();
-		for (int i = 0; i < bytes.length; i++) {
-			System.out.println(bytes[i]);
+		MessageType messageType = MessageType.values()[0];
+		
+		if (messageType == MessageType.REG_REQUEST) {
+			System.out.println("REQ");
+		} else if (messageType == MessageType.REG_RESPONSE) {
+			System.out.println("RESPONSE");
 		}
 	}
 

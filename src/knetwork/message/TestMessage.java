@@ -16,4 +16,10 @@ public class TestMessage extends Message implements Serializable {
 		super();
 		this.val = val;
 	}
+
+	@Override
+	protected byte[] generateDerivedMessageToBytes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

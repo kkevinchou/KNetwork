@@ -34,11 +34,11 @@ public class SendThread extends Thread {
         
 		while (true) {
 			Message message = outMessages.take();
-			byte[] data = Helper.convertMessageToByteArray(message);
+//			byte[] data = Helper.convertMessageToByteArray(message);
+			byte[] data = message.convertMessageToBytes();
 			
 			if (message instanceof AckMessage) {
-				AckMessage ack = (AckMessage)message;
-				Helper.log("Sent ACK| for message " + ack.getAckMsgId());
+				Helper.log("Sent ACK| for message " + ((AckMessage)message).getAckMsgId());
 			} else {
 				Helper.log("--- SEND [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [SIZE: " + data.length + "]");
 			}

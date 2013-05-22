@@ -39,8 +39,9 @@ public class ReceiveThread extends Thread {
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			
 			localSocket.receive(packet);
-
-			Message message = Helper.getMessageFromPacket(packet);
+			
+			Message message = MessageFactory.buildMessage(packet.getData(), packet.getLength());
+			
 			if (message == null) {
 				continue;
 			}

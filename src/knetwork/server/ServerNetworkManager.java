@@ -69,7 +69,9 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		DatagramPacket recvPacket = new DatagramPacket(recvData, recvData.length);
 		socket.receive(recvPacket);
 		
-		Message message = Helper.getMessageFromPacket(recvPacket);
+		Message message = MessageFactory.buildMessage(recvPacket.getData(), recvPacket.getLength());
+		
+//		Message message = Helper.getMessageFromPacket(recvPacket);
 		if (message == null || !(message instanceof RegistrationRequest)) {
 			return false;
 		}
@@ -88,9 +90,9 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	
 	private void sendRegistrationResponse(String clientIp, int clientPort, int clientId) throws IOException {
 		RegistrationResponse registrationResponse = new RegistrationResponse(clientId);
-        registrationResponse.setSenderId(Constants.SERVER_SENDER_ID);
+        registrationResponse.setSenderId(Constants.SERVER_ID);
         
-        byte[] sendData = Helper.convertMessageToByteArray(registrationResponse);
+        byte[] sendData = registrationResponse.convertMessageToBytes();
     	InetAddress clientAddress = InetAddress.getByName(clientIp);
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, clientAddress, clientPort);
         socket.send(sendPacket);
@@ -109,11 +111,11 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	}
 	
 	public void send(Message m) {
-		if (m.getReceiverId() == Constants.SERVER_SENDER_ID) {
+		if (m.getReceiverId() == Constants.SERVER_ID) {
 			System.out.println("WARNING - SENDING MESSAGE FROM SERVER TO SERVER");
 		}
 		
-		m.setSenderId(Constants.SERVER_SENDER_ID);
+		m.setSenderId(Constants.SERVER_ID);
 		SendThread sendThread = clientSendThreads.get(m.getReceiverId());
 		sendThread.queueMessage(m);
 	}
@@ -135,7 +137,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	}
 	
 	public void broadcast(Message message) {
-		message.setSenderId(Constants.SERVER_SENDER_ID);
+		message.setSenderId(Constants.SERVER_ID);
 		
 		for (Map.Entry<Integer, SendThread> entry : clientSendThreads.entrySet()) {
 			int clientId = entry.getKey();

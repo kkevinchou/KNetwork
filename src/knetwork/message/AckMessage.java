@@ -15,4 +15,10 @@ public class AckMessage extends Message implements Serializable {
 	public int getAckMsgId() {
 		return ackMsgId;
 	}
+
+	@Override
+	protected byte[] generateDerivedMessageToBytes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

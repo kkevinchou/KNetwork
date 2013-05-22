@@ -22,12 +22,13 @@ DOCUMENTATION
 
 MESSAGE HEADER
 ========
-	4 bytes - Message Type
 	4 bytes - Message Id
 	4 bytes - Sequence Number
 	4 bytes - Sender Id
 	4 bytes - Receiver Id
 	4 bytes - Reliable
+	
+	4 bytes - Message Type
 	
 REGISTRATION REQUEST
 ========

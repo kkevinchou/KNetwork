@@ -18,6 +18,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 	
 	public ClientNetworkManager() {
 		super(Constants.CLIENT_IN_QUEUE_SIZE);
+		clientId = -1;
 	}
 	
 	public boolean register(String serverIp, int serverPort) {
@@ -25,25 +26,25 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 			socket = new DatagramSocket();
 			
 			sendThread = new SendThread(serverIp, serverPort, socket);
-			sendThread.queueMessage(new RegistrationRequest());
+			send(new RegistrationRequest());
 			sendThread.start();
 
 			receiveThread = new ReceiveThread(socket, inMessages, inAcknowledgements);
 			receiveThread.start();
 			
-			Message m = null;
+			Message message = null;
 			
 			try {
 				do {
-					m = recv_blocking();
-				} while (!(m instanceof RegistrationResponse));
+					message = recv_blocking();
+				} while (!(message instanceof RegistrationResponse));
 			} catch (InterruptedException e) {
 				Helper.log("[ClientNetworkManager] " + e.toString());
 				Helper.log("[ClientNetworkManager] Registration interrupted");
 				throw e;
 			}
 			
-			RegistrationResponse regResponse = (RegistrationResponse)m;
+			RegistrationResponse regResponse = (RegistrationResponse)message;
 			clientId = regResponse.getRegisteredClientId();
 			
 			Helper.log("[ClientNetworkManager] Registered with clientId = " + clientId);
@@ -60,6 +61,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 
 	public void send(Message message) {
 		message.setSenderId(clientId);
+		message.setReceiverId(Constants.SERVER_ID);
         sendThread.queueMessage(message);
 	}
 	
