@@ -29,7 +29,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 			send(new RegistrationRequest());
 			sendThread.start();
 
-			receiveThread = new ReceiveThread(socket, inMessages, inAcknowledgements);
+			receiveThread = new ReceiveThread(this, socket, inMessages, inAcknowledgements);
 			receiveThread.start();
 			
 			Message message = null;
@@ -55,7 +55,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 		return false;
 	}
 	
-	protected void sendMessageAcknowledgement(Message m) {
+	public void sendMessageAcknowledgement(Message m) {
 		send(new AckMessage(m));
 	}
 

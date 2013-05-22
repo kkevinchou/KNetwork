@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
 import knetwork.Constants;
+import knetwork.common.BaseNetworkingManager;
 import knetwork.common.Helper;
 import knetwork.message.*;
 
@@ -23,8 +24,10 @@ public class ReceiveThread extends Thread {
 	public boolean executionFinished;
 	
 	private Set<String> reliablyReceivedMessages;
+	private BaseNetworkingManager netManager;
 	
-	public ReceiveThread(DatagramSocket localSocket, BlockingQueue<Message> inMessages, BlockingQueue<Message> inAcknowledgements) {
+	public ReceiveThread(BaseNetworkingManager netManager, DatagramSocket localSocket, BlockingQueue<Message> inMessages, BlockingQueue<Message> inAcknowledgements) {
+		this.netManager = netManager;
 		this.localSocket = localSocket;
 		this.inMessages = inMessages;
 		this.inAcknowledgements = inAcknowledgements;
@@ -40,7 +43,7 @@ public class ReceiveThread extends Thread {
 			
 			localSocket.receive(packet);
 			
-			Message message = MessageFactory.buildMessage(packet.getData(), packet.getLength());
+			Message message = MessageFactory.buildMessageFromByteArray(packet.getData(), packet.getLength());
 			
 			if (message == null) {
 				continue;
@@ -60,6 +63,7 @@ public class ReceiveThread extends Thread {
 					if (!reliablyReceivedMessages.contains(message.hashKey())) {
 						messageOkay = true;
 						reliablyReceivedMessages.add(message.hashKey());
+						netManager.sendMessageAcknowledgement(message);
 					}
 				} else {
 			        // TODO: Handling overflowing sequence numbers

@@ -18,6 +18,7 @@ Features
 
 MESSAGE FOOTER
 ========
+
 	4 bytes - Message Id
 	4 bytes - Sequence Number
 	4 bytes - Sender Id

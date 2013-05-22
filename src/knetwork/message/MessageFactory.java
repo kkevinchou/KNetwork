@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import knetwork.message.MessageTypes.MessageType;
 
 public abstract class MessageFactory {
-	public static Message buildMessage(byte[] bytes, int length) {
+	public static Message buildMessageFromByteArray(byte[] bytes, int length) {
 		ByteBuffer buffer = ByteBuffer.allocate(length).put(bytes, 0, length);
 		buffer.position(0);
 		
@@ -29,6 +29,9 @@ public abstract class MessageFactory {
 		
 		if (message != null) {
 			Message.setMessageFooterFromByteBuffer(message, buffer);
+			// Undo the incremented message ids.  I should find a better way of doing this...
+			Message.nextMessageId--;
+			Message.nextSeqNumber--;
 		}
 		
 		return message;

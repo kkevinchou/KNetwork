@@ -26,7 +26,6 @@ public abstract class BaseNetworkingManager {
 		ackTimer = new Timer();
 		ackTimer.scheduleAtFixedRate(new TimerTask() {
 			  public void run() {
-//				  Helper.log("NUM IN ACK " + inAcknowledgements.size());
 				  Iterator<Message> iter = inAcknowledgements.iterator();
 				  while (iter.hasNext()) {
 					  AckMessage message = (AckMessage)iter.next();
@@ -34,7 +33,6 @@ public abstract class BaseNetworkingManager {
 					  iter.remove();
 				  }
 				  
-//				  Helper.log("NUM OUT ACK " + outAcknowledgements.size());
 				  for (Message m : outAcknowledgements.values()) {
 					  reSendReliableMessage(m);
 				  }
@@ -43,24 +41,16 @@ public abstract class BaseNetworkingManager {
 	}
 	
 	protected abstract void reSendReliableMessage(Message m);
-	protected abstract void sendMessageAcknowledgement(Message m);
-	
-	private void acknowledgeReliableMessage(Message message) {
-		if (message != null && message.isReliable()) {
-			sendMessageAcknowledgement(message);
-		}
-	}
+	public abstract void sendMessageAcknowledgement(Message m);
 
 	public Message recv() {
 		Message message = inMessages.poll();
-		acknowledgeReliableMessage(message);
 		
 		return message;
 	}
 	
 	public Message recv_blocking() throws InterruptedException {
 		Message message = inMessages.take();
-		acknowledgeReliableMessage(message);
 		
 		return message;
 	}

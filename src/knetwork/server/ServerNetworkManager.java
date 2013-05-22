@@ -54,7 +54,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 				clientIds.add(i);
 			}
 			
-			receiveThread = new ReceiveThread(socket, inMessages, inAcknowledgements);
+			receiveThread = new ReceiveThread(this, socket, inMessages, inAcknowledgements);
 			receiveThread.start();
 			
 			return true;
@@ -69,7 +69,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		DatagramPacket recvPacket = new DatagramPacket(recvData, recvData.length);
 		socket.receive(recvPacket);
 		
-		Message message = MessageFactory.buildMessage(recvPacket.getData(), recvPacket.getLength());
+		Message message = MessageFactory.buildMessageFromByteArray(recvPacket.getData(), recvPacket.getLength());
 		
 		if (message == null || !(message instanceof RegistrationRequest)) {
 			return false;
@@ -105,7 +105,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		}
 	}
 	
-	protected void sendMessageAcknowledgement(Message m) {
+	public void sendMessageAcknowledgement(Message m) {
 		send(new AckMessage(m));
 	}
 	
