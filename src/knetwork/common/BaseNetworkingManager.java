@@ -45,13 +45,11 @@ public abstract class BaseNetworkingManager {
 
 	public Message recv() {
 		Message message = inMessages.poll();
-		
 		return message;
 	}
 	
 	public Message recv_blocking() throws InterruptedException {
 		Message message = inMessages.take();
-		
 		return message;
 	}
 	
