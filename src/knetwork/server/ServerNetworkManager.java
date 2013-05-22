@@ -71,7 +71,6 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		
 		Message message = MessageFactory.buildMessage(recvPacket.getData(), recvPacket.getLength());
 		
-//		Message message = Helper.getMessageFromPacket(recvPacket);
 		if (message == null || !(message instanceof RegistrationRequest)) {
 			return false;
 		}

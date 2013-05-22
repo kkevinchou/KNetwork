@@ -22,14 +22,14 @@ public class ReceiveThread extends Thread {
 	private Map<Integer, Integer> senderSequenceNumbers;
 	public boolean executionFinished;
 	
-	private Set<Message> reliablyReceivedMessages;
+	private Set<String> reliablyReceivedMessages;
 	
 	public ReceiveThread(DatagramSocket localSocket, BlockingQueue<Message> inMessages, BlockingQueue<Message> inAcknowledgements) {
 		this.localSocket = localSocket;
 		this.inMessages = inMessages;
 		this.inAcknowledgements = inAcknowledgements;
 		
-		reliablyReceivedMessages = new HashSet<Message>();
+		reliablyReceivedMessages = new HashSet<String>();
 		senderSequenceNumbers = new HashMap<Integer, Integer>();
 	}
 	
@@ -57,9 +57,9 @@ public class ReceiveThread extends Thread {
 		        Integer prevSeqNumber = senderSequenceNumbers.get(senderId);
 		        
 				if (message.isReliable()) {
-					if (!reliablyReceivedMessages.contains(message)) {
+					if (!reliablyReceivedMessages.contains(message.hashKey())) {
 						messageOkay = true;
-						reliablyReceivedMessages.add(message);
+						reliablyReceivedMessages.add(message.hashKey());
 					}
 				} else {
 			        // TODO: Handling overflowing sequence numbers

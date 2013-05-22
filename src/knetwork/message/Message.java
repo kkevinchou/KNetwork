@@ -1,10 +1,8 @@
 package knetwork.message;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import knetwork.Constants;
-import knetwork.message.MessageTypes.MessageType;
 
 public abstract class Message {
 	public static int nextMessageId = 0;
@@ -26,9 +24,9 @@ public abstract class Message {
 		return buffer.array();
 	}
 	
-	protected abstract byte[] generateDerivedMessageToBytes();
+	protected abstract byte[] generateDerivedMessageBytes();
 	
-	private void init() {
+	public Message() {
 		receiverId = Constants.SERVER_ID;
 		messageId = nextMessageId++;
 		seqNumber = nextSeqNumber++;
@@ -36,21 +34,9 @@ public abstract class Message {
 		nextSeqNumber = nextSeqNumber % Integer.MAX_VALUE;
 	}
 	
-	public Message() {
-		init();
-	}
-	
-	public Message(int receiverId) {
-		init();
-		this.receiverId = receiverId; 
-	}
-	
 	public final byte[] convertMessageToBytes() {
-		byte[] derivedMessageBytes = generateDerivedMessageToBytes();
+		byte[] derivedMessageBytes = generateDerivedMessageBytes();
 		byte[] footerBytes = generateFooterBytes();
-		
-		int a = derivedMessageBytes.length;
-		int b = footerBytes.length;
 		
 		byte[] messageBytes = new byte[derivedMessageBytes.length + footerBytes.length];
 		
@@ -113,5 +99,9 @@ public abstract class Message {
 		message.receiverId = receiverId;
 		message.seqNumber = seqNumber;
 		message.reliable = reliable;
+	}
+	
+	public String hashKey() {
+		return messageId + " " + senderId;
 	}
 }

@@ -8,6 +8,7 @@ public class RegistrationResponse extends Message {
 	private int registeredClientId;
 	
 	public RegistrationResponse(int registeredClientId) {
+		setReceiverId(registeredClientId);
 		this.registeredClientId = registeredClientId;
 	}
 	
@@ -16,8 +17,8 @@ public class RegistrationResponse extends Message {
 	}
 	
 	@Override
-	protected byte[] generateDerivedMessageToBytes() {
-		int totalBytes = 4 * 2;
+	protected byte[] generateDerivedMessageBytes() {
+		int totalBytes = 2 * 4;
 		
 		ByteBuffer buffer = ByteBuffer.allocate(totalBytes);
 		buffer.putInt(MessageType.REG_RESPONSE.getValue());
