@@ -65,18 +65,18 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	}
 
 	private boolean registerUser(int clientId) throws IOException {
-		byte[] recvData = new byte[Constants.MAX_UDP_BYTE_READ_SIZE];
-		DatagramPacket recvPacket = new DatagramPacket(recvData, recvData.length);
-		socket.receive(recvPacket);
+		byte[] data = new byte[Constants.MAX_UDP_BYTE_READ_SIZE];
+		DatagramPacket packet = new DatagramPacket(data, data.length);
+		socket.receive(packet);
 		
-		Message message = MessageFactory.buildMessageFromByteArray(recvPacket.getData(), recvPacket.getLength());
+		Message message = MessageFactory.buildMessageFromByteArray(packet.getData(), packet.getLength());
 		
 		if (message == null || !(message instanceof RegistrationRequest)) {
 			return false;
 		}
     	
-		String clientIp = recvPacket.getAddress().getHostAddress();
-		int clientPort = recvPacket.getPort();
+		String clientIp = packet.getAddress().getHostAddress();
+		int clientPort = packet.getPort();
 		sendRegistrationResponse(clientIp, clientPort, clientId);
 
 		clientSendThreads.put(clientId, new SendThread(clientIp, clientPort, socket));
@@ -136,14 +136,14 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	}
 	
 	public void broadcast(Message message) {
-		message.setSenderId(Constants.SERVER_ID);
-		
-		for (Map.Entry<Integer, SendThread> entry : clientSendThreads.entrySet()) {
-			int clientId = entry.getKey();
-			SendThread sendThread = entry.getValue();
-			
-			message.setReceiverId(clientId);
-			sendThread.queueMessage(message);
+		for (Integer clientId : clientSendThreads.keySet()) {
+			send(clientId, message);
+		}
+	}
+	
+	public void broadcast_reliable(Message message) {
+		for (Integer clientId : clientSendThreads.keySet()) {
+			send_reliable(clientId, message);
 		}
 	}
 	

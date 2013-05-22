@@ -34,7 +34,6 @@ public class SendThread extends Thread {
         
 		while (true) {
 			Message message = outMessages.take();
-//			byte[] data = Helper.convertMessageToByteArray(message);
 			byte[] data = message.convertMessageToBytes();
 			
 			if (message instanceof AckMessage) {

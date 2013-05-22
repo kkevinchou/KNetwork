@@ -40,43 +40,41 @@ public class ReceiveThread extends Thread {
 		while (true) {
 			byte[] data = new byte[Constants.MAX_UDP_BYTE_READ_SIZE];
 			DatagramPacket packet = new DatagramPacket(data, data.length);
-			
 			localSocket.receive(packet);
 			
 			Message message = MessageFactory.buildMessageFromByteArray(packet.getData(), packet.getLength());
-			
 			if (message == null) {
 				continue;
 			}
 			
 			if (message instanceof AckMessage) {
-				AckMessage ack = (AckMessage)message;
 				inAcknowledgements.add(message);
-				Helper.log("Received ACK| for message " + ack.getAckMsgId());
+				Helper.log("Received ACK| for message " + ((AckMessage)message).getAckMsgId());
+				continue;
+			}
+			
+	        boolean messageOkay = false;
+			int senderId = message.getSenderId();
+	        int seqNumber = message.getSeqNumber();
+	        Integer prevSeqNumber = senderSequenceNumbers.get(senderId);
+	        
+			if (message.isReliable() && !reliablyReceivedMessages.contains(message.hashKey())) {
+				// Process the message only if we've never received it before
+				messageOkay = true;
+				reliablyReceivedMessages.add(message.hashKey());
+				netManager.sendMessageAcknowledgement(message);
 			} else {
-		        boolean messageOkay = false;
-				int senderId = message.getSenderId();
-		        int seqNumber = message.getSeqNumber();
-		        Integer prevSeqNumber = senderSequenceNumbers.get(senderId);
-		        
-				if (message.isReliable()) {
-					if (!reliablyReceivedMessages.contains(message.hashKey())) {
-						messageOkay = true;
-						reliablyReceivedMessages.add(message.hashKey());
-						netManager.sendMessageAcknowledgement(message);
-					}
-				} else {
-			        // TODO: Handling overflowing sequence numbers
-					if (prevSeqNumber == null || prevSeqNumber.intValue() < seqNumber) {
-						messageOkay = true;
-				        senderSequenceNumbers.put(senderId, seqNumber);
-					}
+		        // TODO: Handling overflowing sequence numbers
+				// Non reliable messages are only processed if it's more recent than the last message
+				if (prevSeqNumber == null || prevSeqNumber.intValue() < seqNumber) {
+					messageOkay = true;
+			        senderSequenceNumbers.put(senderId, seqNumber);
 				}
-				
-				if (messageOkay) {
-					inMessages.add(message);
-					Helper.log("--- RECEIVE [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [SIZE: " + packet.getLength() + "]");
-				}
+			}
+			
+			if (messageOkay) {
+				inMessages.add(message);
+				Helper.log("--- RECEIVE [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [SIZE: " + packet.getLength() + "]");
 			}
 		}
 	}
