@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ import knetwork.threads.SendThread;
 public class ServerNetworkManager extends BaseNetworkingManager {
 	private DatagramSocket socket;
 	private ReceiveThread receiveThread;
-	private ConcurrentMap<Integer, SendThread> clientSendThreads;
+	private ConcurrentMap<Integer, SendThread> sendThreads;
 	
 	public ServerNetworkManager() {
 		super(Constants.SERVER_IN_QUEUE_SIZE);
@@ -29,80 +30,63 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	public boolean waitForRegistrations(int port, int numRegistrations) {
 		try {
 			socket = new DatagramSocket(port);
-			clientSendThreads = new ConcurrentHashMap<Integer, SendThread>();
-			
-			int nextClientId = 1;
-			int numCurrentRegistrations = 0;
-			
-			while (numCurrentRegistrations < numRegistrations) {
-				try {
-					boolean success = registerUser(nextClientId);
-					
-					if (success) {
-						nextClientId++;
-						numCurrentRegistrations++;
-					}
-				} catch(Exception e) {
-					Helper.log("[ServerNetworkManager] failed to register user: " + e);
-				}
-			}
-			
-			startSendThreads();
-			
-			List<Integer> clientIds = new ArrayList<Integer>();
-			for (int i = 0; i < numRegistrations; i++) {
-				clientIds.add(i);
-			}
-			
-			receiveThread = new ReceiveThread(this, socket, inMessages, inAcknowledgements);
-			receiveThread.start();
-			
-			return true;
-		} catch (Exception e) {
-		}
-		
-		return false;
-	}
-
-	private boolean registerUser(int clientId) throws IOException {
-		byte[] data = new byte[Constants.MAX_UDP_BYTE_READ_SIZE];
-		DatagramPacket packet = new DatagramPacket(data, data.length);
-		socket.receive(packet);
-		
-		Message message = MessageFactory.buildMessageFromByteArray(packet.getData(), packet.getLength());
-		
-		if (message == null || !(message instanceof RegistrationRequest)) {
+		} catch (SocketException e1) {
+			e1.printStackTrace();
 			return false;
 		}
+		
+		receiveThread = new ReceiveThread(this, socket, inMessages, inAcknowledgements);
+		receiveThread.start();
+		
+		sendThreads = new ConcurrentHashMap<Integer, SendThread>();
+		
+		int nextClientId = 1;
+		int numSuccessfulRegistrations = 0;
+		
+		while (numSuccessfulRegistrations < numRegistrations) {
+			boolean success;
+			
+			try {
+				success = registerUser(nextClientId);
+			} catch (IOException e) {
+				e.printStackTrace();
+				success = false;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				success = false;
+			}
+			
+			if (success) {
+				nextClientId++;
+				numSuccessfulRegistrations++;
+			}
+		}
+		
+		return true;
+	}
+
+	private boolean registerUser(int clientId) throws IOException, InterruptedException {
+		Message message = recv_blocking();
+		
+		if (!(message instanceof RegistrationRequest)) {
+			return false;
+		}
+		
+		DatagramPacket packet = ((RegistrationRequest)message).getPacket();
     	
 		String clientIp = packet.getAddress().getHostAddress();
 		int clientPort = packet.getPort();
-		sendRegistrationResponse(clientIp, clientPort, clientId);
-
-		clientSendThreads.put(clientId, new SendThread(clientIp, clientPort, socket));
+		
+		SendThread sendThread = new SendThread(clientIp, clientPort, socket);
+		sendThread.start();
+		sendThreads.put(clientId, sendThread);
+		
+		send(new RegistrationResponse(clientId));
 		
 		InetAddress clientAddress = InetAddress.getByName(clientIp);
 		Helper.log("[ServerNetworkManager] Registered User - " + clientAddress + " " + clientPort);
         
         return true;
-	}
-	
-	private void sendRegistrationResponse(String clientIp, int clientPort, int clientId) throws IOException {
-		RegistrationResponse registrationResponse = new RegistrationResponse(clientId);
-        registrationResponse.setSenderId(Constants.SERVER_ID);
-        
-        byte[] sendData = registrationResponse.convertMessageToBytes();
-    	InetAddress clientAddress = InetAddress.getByName(clientIp);
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, clientAddress, clientPort);
-        socket.send(sendPacket);
-	}
-	
-	private void startSendThreads() {
-		SendThread sendThread = null;
-		for (ConcurrentMap.Entry<Integer, SendThread> entry : clientSendThreads.entrySet()) {
-			sendThread = entry.getValue();
-			sendThread.start();
-		}
 	}
 	
 	public void sendMessageAcknowledgement(Message m) {
@@ -115,7 +99,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		}
 		
 		m.setSenderId(Constants.SERVER_ID);
-		SendThread sendThread = clientSendThreads.get(m.getReceiverId());
+		SendThread sendThread = sendThreads.get(m.getReceiverId());
 		sendThread.queueMessage(m);
 	}
 	
@@ -136,13 +120,13 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	}
 	
 	public void broadcast(Message message) {
-		for (Integer clientId : clientSendThreads.keySet()) {
+		for (Integer clientId : sendThreads.keySet()) {
 			send(clientId, message);
 		}
 	}
 	
 	public void broadcast_reliable(Message message) {
-		for (Integer clientId : clientSendThreads.keySet()) {
+		for (Integer clientId : sendThreads.keySet()) {
 			send_reliable(clientId, message);
 		}
 	}
@@ -152,14 +136,14 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		super.disconnect();
 		receiveThread.interrupt();
 		
-		for (ConcurrentMap.Entry<Integer, SendThread> entry : clientSendThreads.entrySet()) {
+		for (ConcurrentMap.Entry<Integer, SendThread> entry : sendThreads.entrySet()) {
 			SendThread sendThread = entry.getValue();
 			sendThread.interrupt();
 		}
 		
 		try {
 			receiveThread.join();
-			for (ConcurrentMap.Entry<Integer, SendThread> entry : clientSendThreads.entrySet()) {
+			for (ConcurrentMap.Entry<Integer, SendThread> entry : sendThreads.entrySet()) {
 				SendThread sendThread = entry.getValue();
 				sendThread.join();
 			}

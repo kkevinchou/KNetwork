@@ -1,11 +1,15 @@
 package knetwork.message;
 
+import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
 
 import knetwork.message.MessageTypes.MessageType;
 
 public abstract class MessageFactory {
-	public static Message buildMessageFromByteArray(byte[] bytes, int length) {
+	public static Message buildMessageFromPacket(DatagramPacket packet) {
+		byte[] bytes = packet.getData();
+		int length = packet.getLength();
+		
 		ByteBuffer buffer = ByteBuffer.allocate(length).put(bytes, 0, length);
 		buffer.position(0);
 		
@@ -16,7 +20,7 @@ public abstract class MessageFactory {
 		Message message = null; 
 
 		if (messageType == MessageType.REG_REQUEST) {
-			message = RegistrationRequest.constructFromByteBuffer(buffer);
+			message = RegistrationRequest.constructFromPacket(packet);
 		} else if (messageType == MessageType.REG_RESPONSE) {
 			message = RegistrationResponse.constructFromByteBuffer(buffer);
 		} else if (messageType == MessageType.ACK) {

@@ -42,7 +42,7 @@ public class ReceiveThread extends Thread {
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			localSocket.receive(packet);
 			
-			Message message = MessageFactory.buildMessageFromByteArray(packet.getData(), packet.getLength());
+			Message message = MessageFactory.buildMessageFromPacket(packet);
 			if (message == null) {
 				continue;
 			}
@@ -58,7 +58,10 @@ public class ReceiveThread extends Thread {
 	        int seqNumber = message.getSeqNumber();
 	        Integer prevSeqNumber = senderSequenceNumbers.get(senderId);
 	        
-			if (message.isReliable() && !reliablyReceivedMessages.contains(message.hashKey())) {
+	        if (senderId == Constants.UNASSIGNED_CLIENT_ID) {
+	        	// Client is registering for the first time, so they have no senderId
+	        	messageOkay = true;
+	        } else if (message.isReliable() && !reliablyReceivedMessages.contains(message.hashKey())) {
 				// Process the message only if we've never received it before
 				messageOkay = true;
 				reliablyReceivedMessages.add(message.hashKey());

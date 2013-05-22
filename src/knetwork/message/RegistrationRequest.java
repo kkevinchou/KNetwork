@@ -1,10 +1,25 @@
 package knetwork.message;
 
+import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
 
 import knetwork.message.MessageTypes.MessageType;
 
 public class RegistrationRequest extends Message {
+	private DatagramPacket packet;
+	
+	public RegistrationRequest() {
+		
+	}
+	
+	private RegistrationRequest(DatagramPacket packet) {
+		this.packet = packet;
+	}
+	
+	public DatagramPacket getPacket() {
+		return packet;
+	}
+
 	@Override
 	protected byte[] generateDerivedMessageBytes() {
 		int totalBytes = 1 * 4;
@@ -15,9 +30,8 @@ public class RegistrationRequest extends Message {
 		return buffer.array();
 	}
 	
-	// The buffer argument is there just to preserve the same interface between messages
-	public static Message constructFromByteBuffer(ByteBuffer buffer) {
-		RegistrationRequest message = new RegistrationRequest();
+	public static Message constructFromPacket(DatagramPacket packet) {
+		RegistrationRequest message = new RegistrationRequest(packet);
 		
 		return message;
 	}
