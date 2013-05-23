@@ -42,6 +42,7 @@ User defined message types should be defined starting from 10 to INTEGER.MAX
 5. The data you receive will again depend on how you serialized your message in generateMessageBodyBytes()
 6. If your MessageFactory fails to construct a message, it uses the default MessageFactory to try and construct a message.  This will occur for example, when receving the registration, registration response, or acknowlegement message
 
+Look at the knetwork.test package for an example message type, message, and message factory implementation
 
 ### 4.0 Message Format ###
 

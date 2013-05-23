@@ -2,6 +2,7 @@ package knetwork.message;
 
 import java.net.DatagramPacket;
 
+import knetwork.Constants;
 import knetwork.common.Logger;
 import knetwork.message.MessageTypes.MessageType;
 import knetwork.message.messages.AckMessage;
@@ -38,6 +39,11 @@ public abstract class MessageFactory {
 	
 	public final Message buildMessageFromPacket(DatagramPacket packet) {
 		MessageHeader header = new MessageHeader(packet);
+		
+		if (header.getProtocolId() != Constants.PROTOCOL_ID) {
+			return null;
+		}
+		
 		MessageBody body = new MessageBody(packet);
 		
 		Message message = buildMessageBody(packet, header.getMessageType(), body);
