@@ -15,17 +15,6 @@ Features
     
     The ability to send reliable messages
     If the message is dropped during transmission (i.e. timesout) it is resent until an acknowledgement is received
-
-MESSAGE HEADER
-========
-
-	4 bytes - Protocol Id
-	4 bytes - Message Type
-	4 bytes - Message Id
-	4 bytes - Sequence Number
-	4 bytes - Sender Id
-	4 bytes - Receiver Id
-	4 bytes - Reliable
 	
 USAGE
 ========
@@ -41,7 +30,7 @@ USAGE
 	Subclass the Message class and provide the super constructor with your message's message type (integer)
 	Be sure to override generateMessageBodyBytes() so that the network manager knows how to serialize your message
 	Finally, you'll want to implement some sort of static method for reconstructing your message
-		This method should be called from your very own subclass of MessageFactory to reconstruct the message when it is received
+	This method should be called from your subclass of MessageFactory to reconstruct the message when it's received
 	
 ### 3.0 Define Your Message Factory ###
 
@@ -54,7 +43,20 @@ USAGE
 	The message body contains a ByteBuffer which can be used to extract different dataTypes
 	The data you receive will again depend on how you serialized your message in generateMessageBodyBytes()
 	If your MessageFactory fails to construct a message, it uses the default MessageFactory to try and construct a message
-		This will occur for example, when the registration, registration response, and acknowledgement messages are sent
+	This will occur for example, when the registration, registration response, and acknowledgement messages are sent
+
+
+### 4.0 Message Format ###
+========
+
+	4 bytes - Protocol Id
+	4 bytes - Message Type
+	4 bytes - Message Id
+	4 bytes - Sequence Number
+	4 bytes - Sender Id
+	4 bytes - Receiver Id
+	4 bytes - Reliable
+	(Message specific data)
 	
 TODO
 ========
