@@ -31,10 +31,10 @@ USAGE
 ========
 	Include the packages to your java project
 	
-	### Message Types ###
+### Message Types ###
 	
-		Message types are at it's lowest level an integer.
-		User defined message types should be defined starting from 10 to INTEGER.MAX
+	Message types are at it's lowest level an integer.
+	User defined message types should be defined starting from 10 to INTEGER.MAX
 	
 TODO
 ========
