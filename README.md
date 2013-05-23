@@ -57,5 +57,5 @@ User defined message types should be defined starting from 10 to INTEGER.MAX
 TODO
 --------
 
-Ensure message ordering for reliable messages
-Handling registration requests/responses being dropped
+* Ensure message ordering for reliable messages
+* Handling registration requests/responses being dropped
