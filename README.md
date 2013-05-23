@@ -6,12 +6,13 @@ A UDP Networking library intended for games using a Client/Server model
 Features
 --------
 
-* Client/Server message-based communication
-* Broadcasting server messages to all clients
-* Extendable messaging system
-* Discard badly formatted messages
-* The option to send reliable messages.  If a message is dropped during transmission (i.e. timesout) it is resent until an acknowledgement is received
-* Discard old and stale messages that are not marked as reliable
+* Client registration with a server
+* Clients sending/receiving messages to/from the server
+* Server receiving messages from clients
+* Server broadcasting messages to clients
+* Server sending a message to a single client
+* The ability to send reliable messages
+* If a message is dropped during transmission (i.e. timesout) it is resent until an acknowledgement is received
 	
 Usage
 --------
@@ -59,5 +60,3 @@ TODO
 
 * Ensure message ordering for reliable messages
 * Handling registration requests/responses being dropped
-* Piggyback acks onto sent packets
-* Sequence number wrapping
