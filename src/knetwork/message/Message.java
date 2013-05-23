@@ -8,17 +8,29 @@ public abstract class Message {
 	public static int nextMessageId = 0;
 	public static int nextSeqNumber = 0;
 	
+	private int protocolId;
+	private int messageType;
 	private int messageId;
 	private int senderId;
 	private int receiverId;
 	private int seqNumber;
 	private int reliable;
+	
+	protected Message(int messageType) {
+		protocolId = Constants.PROTOCOL_ID;
+		this.messageType = messageType;
+		messageId = nextMessageId++;
+		receiverId = Constants.SERVER_ID;
+		seqNumber = nextSeqNumber++;
+		reliable = 0;
+	}
 
-	private byte[] generateFooterBytes() {
-		int footerSize = 5 * 4;
+	private byte[] generateHeaderBytes() {
+		int headerSize = Constants.MESSAGE_HEADER_SIZE;
 		
-		ByteBuffer buffer = ByteBuffer.allocate(footerSize);
-		buffer = buffer.putInt(messageId).putInt(senderId).putInt(receiverId);
+		ByteBuffer buffer = ByteBuffer.allocate(headerSize);
+		buffer = buffer.putInt(protocolId).putInt(messageType).putInt(messageId);
+		buffer = buffer.putInt(senderId).putInt(receiverId);
 		buffer = buffer.putInt(seqNumber).putInt(reliable);
 		
 		return buffer.array();
@@ -26,26 +38,18 @@ public abstract class Message {
 	
 	protected abstract byte[] generateDerivedMessageBytes();
 	
-	public Message() {
-		receiverId = Constants.SERVER_ID;
-		messageId = nextMessageId++;
-		seqNumber = nextSeqNumber++;
-		reliable = 0;
-		nextSeqNumber = nextSeqNumber % Integer.MAX_VALUE;
-	}
-	
 	public final byte[] convertMessageToBytes() {
+		byte[] headerBytes = generateHeaderBytes();
 		byte[] derivedMessageBytes = generateDerivedMessageBytes();
-		byte[] footerBytes = generateFooterBytes();
 		
-		byte[] messageBytes = new byte[derivedMessageBytes.length + footerBytes.length];
+		byte[] messageBytes = new byte[derivedMessageBytes.length + headerBytes.length];
 		
-		for (int i = 0; i < derivedMessageBytes.length; i++) {
-			messageBytes[i] = derivedMessageBytes[i];
+		for (int i = 0; i < headerBytes.length; i++) {
+			messageBytes[i] = headerBytes[i];
 		}
 		
-		for (int i = 0; i < footerBytes.length; i++) {
-			messageBytes[i + derivedMessageBytes.length] = footerBytes[i];
+		for (int i = 0; i < derivedMessageBytes.length; i++) {
+			messageBytes[i + headerBytes.length] = derivedMessageBytes[i];
 		}
 		
 		return messageBytes;
@@ -87,18 +91,14 @@ public abstract class Message {
 		return messageId;
 	}
 	
-	protected static void setMessageFooterFromByteBuffer(Message message, ByteBuffer buffer) {
-		int messageId = buffer.getInt();
-		int senderId = buffer.getInt();
-		int receiverId = buffer.getInt();
-		int seqNumber = buffer.getInt();
-		int reliable = buffer.getInt();
-		
-		message.messageId = messageId;
-		message.senderId = senderId;
-		message.receiverId = receiverId;
-		message.seqNumber = seqNumber;
-		message.reliable = reliable;
+	protected static void setMessageHeader(Message message, MessageHeader header) {
+		message.protocolId = header.getProtocolId();
+		message.messageType = header.getMessageType();
+		message.messageId = header.getMessageId();
+		message.senderId = header.getSenderId();
+		message.receiverId = header.getReceiverId();
+		message.seqNumber = header.getSeqNumber();
+		message.reliable = header.isReliable();
 	}
 	
 	public String hashKey() {

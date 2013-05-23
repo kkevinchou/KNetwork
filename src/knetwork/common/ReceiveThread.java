@@ -23,15 +23,24 @@ public class ReceiveThread extends Thread {
 	
 	private Set<String> reliablyReceivedMessages;
 	private BaseNetworkingManager netManager;
+	private MessageFactory messageFactory;
 	
-	public ReceiveThread(BaseNetworkingManager netManager, DatagramSocket localSocket, BlockingQueue<Message> inMessages, BlockingQueue<Message> inAcknowledgements) {
+	public ReceiveThread(BaseNetworkingManager netManager, MessageFactory messageFactory, BlockingQueue<Message> inMessages, BlockingQueue<Message> inAcknowledgements) {
 		this.netManager = netManager;
-		this.localSocket = localSocket;
 		this.inMessages = inMessages;
 		this.inAcknowledgements = inAcknowledgements;
+		this.messageFactory = messageFactory;
 		
 		reliablyReceivedMessages = new HashSet<String>();
 		senderSequenceNumbers = new HashMap<Integer, Integer>();
+	}
+	
+	public void setSocket(DatagramSocket localSocket) {
+		this.localSocket = localSocket;
+	}
+	
+	public void setMessageFactory(MessageFactory messageFactory) {
+		this.messageFactory = messageFactory;
 	}
 	
 	private void main() throws IOException {
@@ -40,14 +49,15 @@ public class ReceiveThread extends Thread {
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			localSocket.receive(packet);
 			
-			Message message = MessageFactory.buildMessageFromPacket(packet);
+			Message message = messageFactory.buildMessageFromPacket(packet);
+			
 			if (message == null) {
 				continue;
 			}
 			
 			if (message instanceof AckMessage) {
 				inAcknowledgements.add(message);
-				Helper.log("Received ACK| for message " + ((AckMessage)message).getAckMsgId());
+				Logger.log("Received ACK| for message " + ((AckMessage)message).getAckMsgId());
 				continue;
 			}
 			
@@ -75,25 +85,27 @@ public class ReceiveThread extends Thread {
 			
 			if (messageOkay) {
 				inMessages.add(message);
-				Helper.log("--- RECEIVE [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [SIZE: " + packet.getLength() + "]");
+				Logger.log("--- RECEIVE [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [SIZE: " + packet.getLength() + "]");
 			}
 		}
 	}
 	
 	public void interrupt() {
 		super.interrupt();
-	    localSocket.close();
+		if (localSocket != null) {
+		    localSocket.close();
+		}
 	}
 	
 	public void run() {
 		try {
 			main();
 		} catch (SocketException e) {
-//			Helper.log("[Receive Thread] " + e.toString());
+			Logger.error("[Receive Thread] " + e.toString());
 		} catch (IOException e) {
-			Helper.log("[Receive Thread] " + e.toString());
+			Logger.error("[Receive Thread] " + e.toString());
 		} catch (Exception e) {
-			Helper.log("[Receive Thread] " + e.toString());
+			Logger.error("[Receive Thread] " + e.toString());
 		}
 	}
 }

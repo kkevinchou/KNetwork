@@ -1,6 +1,7 @@
 package knetwork.managers;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -10,7 +11,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import knetwork.Constants;
 import knetwork.common.BaseNetworkingManager;
-import knetwork.common.Helper;
+import knetwork.common.Logger;
 import knetwork.common.ReceiveThread;
 import knetwork.common.SendThread;
 import knetwork.message.*;
@@ -19,20 +20,37 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	private DatagramSocket socket;
 	private ReceiveThread receiveThread;
 	private ConcurrentMap<Integer, SendThread> sendThreads;
+	private MessageFactory messageFactory;
 	
 	public ServerNetworkManager() {
 		super(Constants.SERVER_IN_QUEUE_SIZE);
+		messageFactory = new MessageFactory();
+		receiveThread = new ReceiveThread(this, messageFactory, inMessages, inAcknowledgements);
+	}
+	
+	public void setMessageFactory(MessageFactory messageFactory) {
+		this.messageFactory = messageFactory;
+		receiveThread.setMessageFactory(messageFactory);
 	}
 	
 	public boolean waitForRegistrations(int port, int numRegistrations) {
+		boolean acquireSocketSuccessful = false;
+		
 		try {
 			socket = new DatagramSocket(port);
-		} catch (SocketException e1) {
-			e1.printStackTrace();
-			return false;
+			acquireSocketSuccessful = true;
+		} catch (BindException e) {
+			Logger.log("[ServerNetworkManager] " + e.toString());
+		} catch (SocketException e) {
+			Logger.log("[ServerNetworkManager] " + e.toString());
 		}
 		
-		receiveThread = new ReceiveThread(this, socket, inMessages, inAcknowledgements);
+		if (!acquireSocketSuccessful) {
+			disconnect();
+			return false;
+		}
+
+		receiveThread.setSocket(socket);
 		receiveThread.start();
 		
 		sendThreads = new ConcurrentHashMap<Integer, SendThread>();
@@ -41,16 +59,14 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		int numSuccessfulRegistrations = 0;
 		
 		while (numSuccessfulRegistrations < numRegistrations) {
-			boolean success;
+			boolean success = false;
 			
 			try {
 				success = registerUser(nextClientId);
 			} catch (IOException e) {
-				e.printStackTrace();
-				success = false;
+				Logger.log("[ServerNetworkManager] " + e.toString());
 			} catch (InterruptedException e) {
-				e.printStackTrace();
-				success = false;
+				Logger.log("[ServerNetworkManager] " + e.toString());
 			}
 			
 			if (success) {
@@ -81,7 +97,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		send(new RegistrationResponse(clientId));
 		
 		InetAddress clientAddress = InetAddress.getByName(clientIp);
-		Helper.log("[ServerNetworkManager] Registered User - " + clientAddress + " " + clientPort);
+		Logger.log("[ServerNetworkManager] Registered User - " + clientAddress + " " + clientPort);
         
         return true;
 	}
@@ -133,19 +149,26 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		super.disconnect();
 		receiveThread.interrupt();
 		
-		for (ConcurrentMap.Entry<Integer, SendThread> entry : sendThreads.entrySet()) {
-			SendThread sendThread = entry.getValue();
-			sendThread.interrupt();
-		}
-		
 		try {
 			receiveThread.join();
+		} catch (InterruptedException e) {
+			Logger.log("[ServerNetworkManager] " + e.toString());
+		}
+
+		if (sendThreads != null) {
 			for (ConcurrentMap.Entry<Integer, SendThread> entry : sendThreads.entrySet()) {
 				SendThread sendThread = entry.getValue();
-				sendThread.join();
+				sendThread.interrupt();
 			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			
+			for (ConcurrentMap.Entry<Integer, SendThread> entry : sendThreads.entrySet()) {
+				SendThread sendThread = entry.getValue();
+				try {
+					sendThread.join();
+				} catch (InterruptedException e) {
+					Logger.log("[ServerNetworkManager] " + e.toString());
+				}
+			}
 		}
 	}
 	

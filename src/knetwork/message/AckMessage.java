@@ -2,7 +2,6 @@ package knetwork.message;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;
-
 import knetwork.message.MessageTypes.MessageType;
 
 public class AckMessage extends Message implements Serializable {
@@ -11,11 +10,13 @@ public class AckMessage extends Message implements Serializable {
 	private int ackMsgId;
 	
 	public AckMessage(Message message) {
+		super(MessageType.ACK.getValue());
 		setReceiverId(message.getSenderId());
 		ackMsgId = message.getMessageId();
 	}
 	
 	private AckMessage(int ackMsgId) {
+		super(MessageType.ACK.getValue());
 		this.ackMsgId = ackMsgId;
 	}
 	
@@ -25,18 +26,18 @@ public class AckMessage extends Message implements Serializable {
 
 	@Override
 	protected byte[] generateDerivedMessageBytes() {
-		int totalBytes = 2 * 4;
+		int totalBytes = 1 * 4;
 		
 		ByteBuffer buffer = ByteBuffer.allocate(totalBytes);
-		buffer.putInt(MessageType.ACK.getValue());
 		buffer.putInt(ackMsgId);
 		
 		return buffer.array();
 	}
 	
-	public static Message constructFromByteBuffer(ByteBuffer buffer) {
-		int ackMsgId = buffer.getInt();
+	public static Message constructFromMessageBody(MessageBody body) {
+		ByteBuffer buffer = body.getByteBuffer();
 		
+		int ackMsgId = buffer.getInt();
 		AckMessage message = new AckMessage(ackMsgId);
 		
 		return message;

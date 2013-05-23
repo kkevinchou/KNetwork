@@ -1,38 +1,44 @@
 package knetwork.message;
 
 import java.net.DatagramPacket;
-import java.nio.ByteBuffer;
 
+import knetwork.common.Logger;
 import knetwork.message.MessageTypes.MessageType;
 
-public abstract class MessageFactory {
-	public static Message buildMessageFromPacket(DatagramPacket packet) {
-		byte[] bytes = packet.getData();
-		int length = packet.getLength();
-		
-		ByteBuffer buffer = ByteBuffer.allocate(length).put(bytes, 0, length);
-		buffer.position(0);
-		
-		int intMessageType = buffer.getInt();
-//		System.out.println("MESSAGE FACTORY GOT TYPE: " + intMessageType);
+public class MessageFactory {
+	protected Message buildMessageBody(DatagramPacket packet, int intMessageType, MessageBody body) {
+		// Compare message type with the last KNetwork message type.
+		// If larger, then it's a user defined message type
+		if (intMessageType >
+				MessageType.values()[MessageType.values().length - 1].getValue()) {
+			return null;
+		}
 		
 		MessageType messageType = MessageType.values()[intMessageType];
-		Message message = null; 
-
+		Logger.log("Received Type : " + messageType);
+		
+		Message message = null;
+		
 		if (messageType == MessageType.REG_REQUEST) {
 			message = RegistrationRequest.constructFromPacket(packet);
 		} else if (messageType == MessageType.REG_RESPONSE) {
-			message = RegistrationResponse.constructFromByteBuffer(buffer);
+			message = RegistrationResponse.constructFromMessageBody(body);
 		} else if (messageType == MessageType.ACK) {
-			message = AckMessage.constructFromByteBuffer(buffer);
-		} else if (messageType == MessageType.TEST) {
-			message = TestMessage.constructFromByteBuffer(buffer);
-		} else {
-			System.out.println("ERROR: Unhandled message type in MessageFactory");
+			message = AckMessage.constructFromMessageBody(body);
 		}
 		
+		return message;
+	}
+	
+	public final Message buildMessageFromPacket(DatagramPacket packet) {
+		MessageHeader header = new MessageHeader(packet);
+		MessageBody body = new MessageBody(packet);
+		
+		Message message = buildMessageBody(packet, header.getMessageType(), body);
+		
 		if (message != null) {
-			Message.setMessageFooterFromByteBuffer(message, buffer);
+			Message.setMessageHeader(message, header);
+			
 			// Undo the incremented message ids.  I should find a better way of doing this...
 			Message.nextMessageId--;
 			Message.nextSeqNumber--;

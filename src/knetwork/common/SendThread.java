@@ -36,9 +36,9 @@ public class SendThread extends Thread {
 			byte[] data = message.convertMessageToBytes();
 			
 			if (message instanceof AckMessage) {
-				Helper.log("Sent ACK| for message " + ((AckMessage)message).getAckMsgId());
+				Logger.log("Sent ACK| for message " + ((AckMessage)message).getAckMsgId());
 			} else {
-				Helper.log("--- SEND [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [SIZE: " + data.length + "]");
+				Logger.log("--- SEND [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [SIZE: " + data.length + "]");
 			}
 	        
 	        DatagramPacket packet = new DatagramPacket(data, data.length, destinationAddress, destinationPort);
@@ -63,7 +63,7 @@ public class SendThread extends Thread {
 		} catch (InterruptedException e) {
 //			Helper.log("[Send Thread] " + e.toString());
 		} catch (IOException e) {
-			Helper.log("[Send Thread] " + e.toString());
+			Logger.log("[Send Thread] " + e.toString());
 		}
 	}
 }

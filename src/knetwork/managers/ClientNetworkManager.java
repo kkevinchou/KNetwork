@@ -4,7 +4,7 @@ import java.net.DatagramSocket;
 
 import knetwork.Constants;
 import knetwork.common.BaseNetworkingManager;
-import knetwork.common.Helper;
+import knetwork.common.Logger;
 import knetwork.common.ReceiveThread;
 import knetwork.common.SendThread;
 import knetwork.message.*;
@@ -15,13 +15,23 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 	private SendThread sendThread;
 	private ReceiveThread receiveThread;
 	private int clientId;
+	private MessageFactory messageFactory;
 	
 	public ClientNetworkManager() {
 		super(Constants.CLIENT_IN_QUEUE_SIZE);
 		clientId = -1;
+		messageFactory = new MessageFactory();
+		receiveThread = new ReceiveThread(this, messageFactory, inMessages, inAcknowledgements);
+	}
+	
+	public void setMessageFactory(MessageFactory messageFactory) {
+		this.messageFactory = messageFactory;
+		receiveThread.setMessageFactory(messageFactory);
 	}
 	
 	public boolean register(String serverIp, int serverPort) {
+		boolean registerSuccess = false;
+		
 		try {
 			socket = new DatagramSocket();
 			
@@ -29,30 +39,29 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 			send(new RegistrationRequest());
 			sendThread.start();
 
-			receiveThread = new ReceiveThread(this, socket, inMessages, inAcknowledgements);
+			receiveThread.setSocket(socket);
 			receiveThread.start();
 			
 			Message message = null;
-			
-			try {
-				do {
-					message = recv_blocking();
-				} while (!(message instanceof RegistrationResponse));
-			} catch (InterruptedException e) {
-				Helper.log("[ClientNetworkManager] " + e.toString());
-				Helper.log("[ClientNetworkManager] Registration interrupted");
-				throw e;
-			}
+
+			do {
+				message = recv_blocking();
+			} while (!(message instanceof RegistrationResponse));
 			
 			RegistrationResponse regResponse = (RegistrationResponse)message;
 			clientId = regResponse.getRegisteredClientId();
 			
-			Helper.log("[ClientNetworkManager] Registered with clientId = " + clientId);
-			return true;
+			Logger.log("[ClientNetworkManager] Registered with clientId = " + clientId);
+			registerSuccess = true;
 		} catch (Exception e) {
+			Logger.error("[ClientNetworkManager] " + e.toString());
 		}
 		
-		return false;
+		if (!registerSuccess) {
+			disconnect();
+		}
+		
+		return registerSuccess;
 	}
 	
 	public void sendMessageAcknowledgement(Message m) {
@@ -81,7 +90,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 			receiveThread.join();
 			sendThread.join();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			Logger.error("[ClientNetworkManager] " + e.toString());
 		}
 		
 		socket.close();

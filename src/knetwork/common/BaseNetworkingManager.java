@@ -48,8 +48,14 @@ public abstract class BaseNetworkingManager {
 		return message;
 	}
 	
-	public Message recv_blocking() throws InterruptedException {
-		Message message = inMessages.take();
+	public Message recv_blocking() {
+		Message message = null;
+		
+		try {
+			message = inMessages.take();
+		} catch (InterruptedException e) {
+		}
+		
 		return message;
 	}
 	

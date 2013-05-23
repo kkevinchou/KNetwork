@@ -1,18 +1,18 @@
 package knetwork.message;
 
 import java.net.DatagramPacket;
-import java.nio.ByteBuffer;
-
 import knetwork.message.MessageTypes.MessageType;
 
 public class RegistrationRequest extends Message {
 	private DatagramPacket packet;
+	private static final byte[] ZERO_BYTE_ARRAY = new byte[0];
 	
 	public RegistrationRequest() {
-		
+		super(MessageType.REG_REQUEST.getValue());
 	}
 	
 	private RegistrationRequest(DatagramPacket packet) {
+		super(MessageType.REG_REQUEST.getValue());
 		this.packet = packet;
 	}
 	
@@ -22,12 +22,7 @@ public class RegistrationRequest extends Message {
 
 	@Override
 	protected byte[] generateDerivedMessageBytes() {
-		int totalBytes = 1 * 4;
-		
-		ByteBuffer buffer = ByteBuffer.allocate(totalBytes);
-		buffer.putInt(MessageType.REG_REQUEST.getValue());
-		
-		return buffer.array();
+		return ZERO_BYTE_ARRAY;
 	}
 	
 	public static Message constructFromPacket(DatagramPacket packet) {
