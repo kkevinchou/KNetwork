@@ -30,4 +30,3 @@ TODO
 
     Ensure message ordering for reliable messages
     Handling registration requests/responses being dropped
-    Network managers should clean up after them selves on failure (e.g. waiting for registrations)
