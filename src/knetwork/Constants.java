@@ -14,5 +14,5 @@ public class Constants {
 	public static final boolean DEBUG_ERROR = true;
 	
 	public static final int MESSAGE_HEADER_SIZE = 7 * 4;
-	public static final int PROTOCOL_ID = 19901208;
+	public static final int PROTOCOL_ID = 19900302;
 }

@@ -21,7 +21,7 @@ public class RegistrationRequest extends Message {
 	}
 
 	@Override
-	protected byte[] generateDerivedMessageBytes() {
+	protected byte[] generateMessageBodyBytes() {
 		return ZERO_BYTE_ARRAY;
 	}
 	

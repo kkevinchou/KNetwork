@@ -27,7 +27,7 @@ public class AckMessage extends Message implements Serializable {
 	}
 
 	@Override
-	protected byte[] generateDerivedMessageBytes() {
+	protected byte[] generateMessageBodyBytes() {
 		int totalBytes = 1 * 4;
 		
 		ByteBuffer buffer = ByteBuffer.allocate(totalBytes);

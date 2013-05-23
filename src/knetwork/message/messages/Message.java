@@ -37,11 +37,11 @@ public abstract class Message {
 		return buffer.array();
 	}
 	
-	protected abstract byte[] generateDerivedMessageBytes();
+	protected abstract byte[] generateMessageBodyBytes();
 	
 	public final byte[] convertMessageToBytes() {
 		byte[] headerBytes = generateHeaderBytes();
-		byte[] derivedMessageBytes = generateDerivedMessageBytes();
+		byte[] derivedMessageBytes = generateMessageBodyBytes();
 		
 		byte[] messageBytes = new byte[derivedMessageBytes.length + headerBytes.length];
 		

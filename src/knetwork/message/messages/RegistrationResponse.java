@@ -19,7 +19,7 @@ public class RegistrationResponse extends Message {
 	}
 	
 	@Override
-	protected byte[] generateDerivedMessageBytes() {
+	protected byte[] generateMessageBodyBytes() {
 		int totalBytes = 1 * 4;
 		
 		ByteBuffer buffer = ByteBuffer.allocate(totalBytes);
