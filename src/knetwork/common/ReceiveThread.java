@@ -17,17 +17,16 @@ import knetwork.message.messages.Message;
 
 public class ReceiveThread extends Thread {
 	private BlockingQueue<Message> inMessages;
-	private BlockingQueue<Message> inAcknowledgements;
+	private BlockingQueue<AckMessage> inAcknowledgements;
 	
 	private DatagramSocket localSocket;
 	private Map<Integer, Integer> senderSequenceNumbers;
-	public boolean executionFinished;
 	
 	private Set<String> reliablyReceivedMessages;
 	private BaseNetworkingManager netManager;
 	private MessageFactory messageFactory;
 	
-	public ReceiveThread(BaseNetworkingManager netManager, MessageFactory messageFactory, BlockingQueue<Message> inMessages, BlockingQueue<Message> inAcknowledgements) {
+	public ReceiveThread(BaseNetworkingManager netManager, MessageFactory messageFactory, BlockingQueue<Message> inMessages, BlockingQueue<AckMessage> inAcknowledgements) {
 		this.netManager = netManager;
 		this.inMessages = inMessages;
 		this.inAcknowledgements = inAcknowledgements;
@@ -58,8 +57,9 @@ public class ReceiveThread extends Thread {
 			}
 			
 			if (message instanceof AckMessage) {
-				inAcknowledgements.add(message);
-				Logger.log("Received ACK| for message " + ((AckMessage)message).getAckMsgId());
+				AckMessage ackMessage = (AckMessage)message;
+				inAcknowledgements.add(ackMessage);
+				Logger.log("Received ACK| for message " + ackMessage.getAckMsgId());
 				continue;
 			}
 			

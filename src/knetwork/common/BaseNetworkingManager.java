@@ -14,21 +14,21 @@ import knetwork.message.messages.Message;
 
 public abstract class BaseNetworkingManager {
 	protected BlockingQueue<Message> inMessages;
-	protected BlockingQueue<Message> inAcknowledgements;
+	protected BlockingQueue<AckMessage> inAcknowledgements;
 	protected Map<Integer, Message> outAcknowledgements;
 	private Timer ackTimer;
 	
 	protected BaseNetworkingManager(int inQueueSize) {
 		inMessages = new ArrayBlockingQueue<Message>(inQueueSize);
-		inAcknowledgements = new ArrayBlockingQueue<Message>(inQueueSize);
+		inAcknowledgements = new ArrayBlockingQueue<AckMessage>(inQueueSize);
 		outAcknowledgements = new HashMap<Integer, Message>();
 		
 		ackTimer = new Timer();
 		ackTimer.scheduleAtFixedRate(new TimerTask() {
 			  public void run() {
-				  Iterator<Message> iter = inAcknowledgements.iterator();
+				  Iterator<AckMessage> iter = inAcknowledgements.iterator();
 				  while (iter.hasNext()) {
-					  AckMessage message = (AckMessage)iter.next();
+					  AckMessage message = iter.next();
 					  outAcknowledgements.remove(message.getAckMsgId());
 					  iter.remove();
 				  }
