@@ -3,13 +3,13 @@ package knetwork.message.messages;
 import java.nio.ByteBuffer;
 
 import knetwork.message.MessageBody;
-import knetwork.message.MessageTypes.MessageType;
 
 public class RegistrationResponse extends Message {
 	private int registeredClientId;
+	public static final int MESSAGE_TYPE = 1;
 	
 	public RegistrationResponse(int registeredClientId) {
-		super(MessageType.REG_RESPONSE.getValue());
+		super(MESSAGE_TYPE);
 		setReceiverId(registeredClientId);
 		this.registeredClientId = registeredClientId;
 	}

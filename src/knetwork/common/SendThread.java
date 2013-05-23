@@ -36,9 +36,9 @@ public class SendThread extends Thread {
 			byte[] data = message.convertMessageToBytes();
 			
 			if (message instanceof AckMessage) {
-				Logger.log("Sent ACK| for message " + ((AckMessage)message).getAckMsgId());
+				Logger.log("    ---    SEND ACK for message " + ((AckMessage)message).getAckMsgId());
 			} else {
-				Logger.log("--- SEND [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [SIZE: " + data.length + "]");
+				Logger.log("    ---    SEND [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [TYPE: " + message.getMessageType() + "] [SIZE: " + data.length + "]");
 			}
 	        
 	        DatagramPacket packet = new DatagramPacket(data, data.length, destinationAddress, destinationPort);

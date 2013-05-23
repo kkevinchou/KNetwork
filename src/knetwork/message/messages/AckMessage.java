@@ -1,24 +1,22 @@
 package knetwork.message.messages;
 
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 import knetwork.message.MessageBody;
-import knetwork.message.MessageTypes.MessageType;
 
-public class AckMessage extends Message implements Serializable {
-	private static final long serialVersionUID = 4423374756069684189L;
+public class AckMessage extends Message  {
+	public static final int MESSAGE_TYPE = 2;
 	
 	private int ackMsgId;
 	
 	public AckMessage(Message message) {
-		super(MessageType.ACK.getValue());
+		super(MESSAGE_TYPE);
 		setReceiverId(message.getSenderId());
 		ackMsgId = message.getMessageId();
 	}
 	
 	private AckMessage(int ackMsgId) {
-		super(MessageType.ACK.getValue());
+		super(MESSAGE_TYPE);
 		this.ackMsgId = ackMsgId;
 	}
 	

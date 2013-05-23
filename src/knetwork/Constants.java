@@ -10,9 +10,11 @@ public class Constants {
 	public static final int UNASSIGNED_CLIENT_ID = -1;
 	public static final long ACKNOWLEDGEMENT_TIMEOUT = 5 * 1000;
 	
-	public static final boolean DEBUG_LOG = false;
+	public static final boolean DEBUG_LOG = true;
 	public static final boolean DEBUG_ERROR = false;
 	
 	public static final int MESSAGE_HEADER_SIZE = 7 * 4;
 	public static final int PROTOCOL_ID = 19900302;
+	
+	public static final int MAX_RESERVED_MESSAGE_TYPE = 9;
 }

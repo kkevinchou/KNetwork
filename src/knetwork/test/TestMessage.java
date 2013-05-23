@@ -1,24 +1,22 @@
 package knetwork.test;
 
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 import knetwork.message.MessageBody;
 import knetwork.message.messages.Message;
-import knetwork.test.TestMessageTypes.TestMessageType;
 
-public class TestMessage extends Message implements Serializable {
-	private static final long serialVersionUID = -1992275173175723676L;
+public class TestMessage extends Message {
+	public static final int MESSAGE_TYPE = 10;
 
 	public int val;
 	
 	public TestMessage() {
-		super(TestMessageType.TEST_TYPE.getValue());
+		super(MESSAGE_TYPE);
 		this.val = 12;
 	}
 	
 	public TestMessage(int val) {
-		super(TestMessageType.TEST_TYPE.getValue());
+		super(MESSAGE_TYPE);
 		this.val = val;
 	}
 

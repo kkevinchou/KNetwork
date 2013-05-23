@@ -1,18 +1,18 @@
 package knetwork.message.messages;
 
 import java.net.DatagramPacket;
-import knetwork.message.MessageTypes.MessageType;
 
 public class RegistrationRequest extends Message {
 	private DatagramPacket packet;
 	private static final byte[] ZERO_BYTE_ARRAY = new byte[0];
+	public static final int MESSAGE_TYPE = 0;
 	
 	public RegistrationRequest() {
-		super(MessageType.REG_REQUEST.getValue());
+		super(MESSAGE_TYPE);
 	}
 	
 	private RegistrationRequest(DatagramPacket packet) {
-		super(MessageType.REG_REQUEST.getValue());
+		super(MESSAGE_TYPE);
 		this.packet = packet;
 	}
 	

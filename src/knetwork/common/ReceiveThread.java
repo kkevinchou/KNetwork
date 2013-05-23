@@ -49,6 +49,7 @@ public class ReceiveThread extends Thread {
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			localSocket.receive(packet);
 			
+			MessageHeader header = new MessageHeader(packet);
 			Message message = messageFactory.buildMessageFromPacket(packet);
 			
 			if (message == null) {
@@ -58,7 +59,7 @@ public class ReceiveThread extends Thread {
 			if (message instanceof AckMessage) {
 				AckMessage ackMessage = (AckMessage)message;
 				inAcknowledgements.add(ackMessage);
-				Logger.log("Received ACK| for message " + ackMessage.getAckMsgId());
+				Logger.log("    === RECEIVE ACK for message " + ackMessage.getAckMsgId());
 				continue;
 			}
 			
@@ -86,7 +87,7 @@ public class ReceiveThread extends Thread {
 			
 			if (messageOkay) {
 				inMessages.add(message);
-				Logger.log("--- RECEIVE [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [SIZE: " + packet.getLength() + "]");
+				Logger.log("    === RECEIVE [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [TYPE: " + header.getMessageType() + "] [SIZE: " + packet.getLength() + "]");
 			}
 		}
 	}

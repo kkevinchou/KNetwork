@@ -4,7 +4,6 @@ import java.net.DatagramPacket;
 
 import knetwork.Constants;
 import knetwork.common.Logger;
-import knetwork.message.MessageTypes.MessageType;
 import knetwork.message.messages.AckMessage;
 import knetwork.message.messages.Message;
 import knetwork.message.messages.RegistrationRequest;
@@ -13,24 +12,19 @@ import knetwork.message.messages.RegistrationResponse;
 public abstract class MessageFactory {
 	protected abstract Message buildMessageBody(DatagramPacket packet, int intMessageType, MessageBody body);
 	
-	private Message defaultBuildMessageBody(DatagramPacket packet, int intMessageType, MessageBody body) {
-		// Compare message type with the last KNetwork message type.
+	private Message defaultBuildMessageBody(DatagramPacket packet, int messageType, MessageBody body) {
 		// If larger, then it's a user defined message type
-		if (intMessageType >
-				MessageType.values()[MessageType.values().length - 1].getValue()) {
+		if (messageType > Constants.MAX_RESERVED_MESSAGE_TYPE) {
 			return null;
 		}
 		
-		MessageType messageType = MessageType.values()[intMessageType];
-		Logger.log("Received Type : " + messageType);
-		
 		Message message = null;
 		
-		if (messageType == MessageType.REG_REQUEST) {
+		if (messageType == RegistrationRequest.MESSAGE_TYPE) {
 			message = RegistrationRequest.constructFromPacket(packet);
-		} else if (messageType == MessageType.REG_RESPONSE) {
+		} else if (messageType == RegistrationResponse.MESSAGE_TYPE) {
 			message = RegistrationResponse.constructFromMessageBody(body);
-		} else if (messageType == MessageType.ACK) {
+		} else if (messageType == AckMessage.MESSAGE_TYPE) {
 			message = AckMessage.constructFromMessageBody(body);
 		}
 		

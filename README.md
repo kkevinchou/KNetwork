@@ -60,4 +60,3 @@ TODO
 
 * Ensure message ordering for reliable messages
 * Handling registration requests/responses being dropped
-* Rename MessageFactory to MessageBuilder

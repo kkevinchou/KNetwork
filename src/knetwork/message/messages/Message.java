@@ -56,6 +56,14 @@ public abstract class Message {
 		return messageBytes;
 	}
 	
+	public final int getProtocolId() {
+		return protocolId;
+	}
+	
+	public final int getMessageType() {
+		return messageType;
+	}
+	
 	public final int getSenderId() {
 		return senderId;
 	}
