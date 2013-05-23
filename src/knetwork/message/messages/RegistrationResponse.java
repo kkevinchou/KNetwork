@@ -1,6 +1,8 @@
-package knetwork.message;
+package knetwork.message.messages;
 
 import java.nio.ByteBuffer;
+
+import knetwork.message.MessageBody;
 import knetwork.message.MessageTypes.MessageType;
 
 public class RegistrationResponse extends Message {

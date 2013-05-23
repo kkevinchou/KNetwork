@@ -1,6 +1,6 @@
 package knetwork.test;
 
-import knetwork.message.Message;
+import knetwork.message.messages.Message;
 
 public class Test {
 	public static void main(String[] args) {

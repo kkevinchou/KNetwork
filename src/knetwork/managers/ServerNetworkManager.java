@@ -15,6 +15,10 @@ import knetwork.common.Logger;
 import knetwork.common.ReceiveThread;
 import knetwork.common.SendThread;
 import knetwork.message.*;
+import knetwork.message.messages.AckMessage;
+import knetwork.message.messages.Message;
+import knetwork.message.messages.RegistrationRequest;
+import knetwork.message.messages.RegistrationResponse;
 
 public class ServerNetworkManager extends BaseNetworkingManager {
 	private DatagramSocket socket;
@@ -24,7 +28,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	
 	public ServerNetworkManager() {
 		super(Constants.SERVER_IN_QUEUE_SIZE);
-		messageFactory = new MessageFactory();
+		messageFactory = new DefaultMessageFactory();
 		receiveThread = new ReceiveThread(this, messageFactory, inMessages, inAcknowledgements);
 	}
 	

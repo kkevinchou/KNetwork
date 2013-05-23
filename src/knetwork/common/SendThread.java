@@ -9,8 +9,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import knetwork.Constants;
-import knetwork.message.AckMessage;
-import knetwork.message.Message;
+import knetwork.message.messages.AckMessage;
+import knetwork.message.messages.Message;
 
 
 public class SendThread extends Thread {

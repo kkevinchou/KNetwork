@@ -4,9 +4,15 @@ import java.net.DatagramPacket;
 
 import knetwork.common.Logger;
 import knetwork.message.MessageTypes.MessageType;
+import knetwork.message.messages.AckMessage;
+import knetwork.message.messages.Message;
+import knetwork.message.messages.RegistrationRequest;
+import knetwork.message.messages.RegistrationResponse;
 
-public class MessageFactory {
-	protected Message buildMessageBody(DatagramPacket packet, int intMessageType, MessageBody body) {
+public abstract class MessageFactory {
+	protected abstract Message buildMessageBody(DatagramPacket packet, int intMessageType, MessageBody body);
+	
+	private Message defaultBuildMessageBody(DatagramPacket packet, int intMessageType, MessageBody body) {
 		// Compare message type with the last KNetwork message type.
 		// If larger, then it's a user defined message type
 		if (intMessageType >
@@ -35,6 +41,11 @@ public class MessageFactory {
 		MessageBody body = new MessageBody(packet);
 		
 		Message message = buildMessageBody(packet, header.getMessageType(), body);
+		
+		// If the user defined message factory fails to build a message, use the default
+		if (message == null) {
+			message = defaultBuildMessageBody(packet, header.getMessageType(), body);
+		}
 		
 		if (message != null) {
 			Message.setMessageHeader(message, header);

@@ -12,6 +12,8 @@ import java.util.concurrent.BlockingQueue;
 
 import knetwork.Constants;
 import knetwork.message.*;
+import knetwork.message.messages.AckMessage;
+import knetwork.message.messages.Message;
 
 public class ReceiveThread extends Thread {
 	private BlockingQueue<Message> inMessages;

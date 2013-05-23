@@ -1,8 +1,9 @@
-package knetwork.message;
+package knetwork.message.messages;
 
 import java.nio.ByteBuffer;
 
 import knetwork.Constants;
+import knetwork.message.MessageHeader;
 
 public abstract class Message {
 	public static int nextMessageId = 0;
@@ -91,7 +92,7 @@ public abstract class Message {
 		return messageId;
 	}
 	
-	protected static void setMessageHeader(Message message, MessageHeader header) {
+	public static void setMessageHeader(Message message, MessageHeader header) {
 		message.protocolId = header.getProtocolId();
 		message.messageType = header.getMessageType();
 		message.messageId = header.getMessageId();

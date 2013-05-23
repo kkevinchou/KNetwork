@@ -3,8 +3,8 @@ package knetwork.test;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-import knetwork.message.Message;
 import knetwork.message.MessageBody;
+import knetwork.message.messages.Message;
 import knetwork.test.TestMessageTypes.TestMessageType;
 
 public class TestMessage extends Message implements Serializable {

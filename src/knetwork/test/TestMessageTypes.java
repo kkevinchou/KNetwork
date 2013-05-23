@@ -25,7 +25,7 @@ public class TestMessageTypes {
 			case 10:
 				return TEST_TYPE;
 			default:
-				Logger.error("[TestMessageType] Unmatched conversion to enum for value " + num);
+				Logger.log("[TestMessageType] Unmatched conversion to enum for value " + num);
 				return NULL;
 			}
 		}

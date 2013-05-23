@@ -1,4 +1,4 @@
-package knetwork.message;
+package knetwork.message.messages;
 
 import java.net.DatagramPacket;
 import knetwork.message.MessageTypes.MessageType;

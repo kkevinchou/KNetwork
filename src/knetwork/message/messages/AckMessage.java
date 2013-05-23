@@ -1,7 +1,9 @@
-package knetwork.message;
+package knetwork.message.messages;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+
+import knetwork.message.MessageBody;
 import knetwork.message.MessageTypes.MessageType;
 
 public class AckMessage extends Message implements Serializable {

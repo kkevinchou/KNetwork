@@ -8,6 +8,10 @@ import knetwork.common.Logger;
 import knetwork.common.ReceiveThread;
 import knetwork.common.SendThread;
 import knetwork.message.*;
+import knetwork.message.messages.AckMessage;
+import knetwork.message.messages.Message;
+import knetwork.message.messages.RegistrationRequest;
+import knetwork.message.messages.RegistrationResponse;
 
 
 public class ClientNetworkManager extends BaseNetworkingManager {
@@ -20,7 +24,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 	public ClientNetworkManager() {
 		super(Constants.CLIENT_IN_QUEUE_SIZE);
 		clientId = -1;
-		messageFactory = new MessageFactory();
+		messageFactory = new DefaultMessageFactory();
 		receiveThread = new ReceiveThread(this, messageFactory, inMessages, inAcknowledgements);
 	}
 	

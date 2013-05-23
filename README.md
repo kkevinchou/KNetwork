@@ -27,11 +27,15 @@ MESSAGE HEADER
 	4 bytes - Receiver Id
 	4 bytes - Reliable
 	
-MESSAGE TYPES
+USAGE
 ========
-
-	Message types are at it's lowest level an integer.
-	User defined message types should be defined starting from 10 to INTEGER.MAX
+	Include the packages to your java project
+	
+	MESSAGE TYPES
+	-------
+	
+		Message types are at it's lowest level an integer.
+		User defined message types should be defined starting from 10 to INTEGER.MAX
 	
 TODO
 ========
