@@ -16,14 +16,22 @@ Features
     The ability to send reliable messages
     If the message is dropped during transmission (i.e. timesout) it is resent until an acknowledgement is received
 
-MESSAGE FOOTER
+MESSAGE HEADER
 ========
 
+	4 bytes - Protocol Id
+	4 bytes - Message Type
 	4 bytes - Message Id
 	4 bytes - Sequence Number
 	4 bytes - Sender Id
 	4 bytes - Receiver Id
 	4 bytes - Reliable
+	
+MESSAGE TYPES
+========
+
+	Message types are at it's lowest level an integer.
+	User defined message types should be defined starting from 10 to INTEGER.MAX
 	
 TODO
 ========
