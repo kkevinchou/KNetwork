@@ -18,11 +18,10 @@ import knetwork.message.messages.Message;
 public class ReceiveThread extends Thread {
 	private BlockingQueue<Message> inMessages;
 	private BlockingQueue<AckMessage> inAcknowledgements;
+	private Map<Integer, Integer> senderSequenceNumbers;
+	private Set<String> reliablyReceivedMessages;
 	
 	private DatagramSocket localSocket;
-	private Map<Integer, Integer> senderSequenceNumbers;
-	
-	private Set<String> reliablyReceivedMessages;
 	private BaseNetworkingManager netManager;
 	private MessageFactory messageFactory;
 	
