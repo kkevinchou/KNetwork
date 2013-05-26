@@ -59,6 +59,6 @@ TODO
 
 * Ensure message ordering for reliable messages
 * Handling registration requests/responses being dropped
-* Clean up the buffer = buffer.* code
+* Registration timeouts
 * Hooks or some method of handling player disconnection (use heartbeat)
 * Termination message

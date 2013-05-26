@@ -30,9 +30,9 @@ public abstract class Message {
 		int headerSize = Constants.MESSAGE_HEADER_SIZE;
 		
 		ByteBuffer buffer = ByteBuffer.allocate(headerSize);
-		buffer = buffer.putInt(protocolId).putInt(messageType).putInt(messageId);
-		buffer = buffer.putInt(senderId).putInt(receiverId);
-		buffer = buffer.putInt(seqNumber).putInt(reliable);
+		buffer.putInt(protocolId).putInt(messageType).putInt(messageId);
+		buffer.putInt(senderId).putInt(receiverId);
+		buffer.putInt(seqNumber).putInt(reliable);
 		
 		return buffer.array();
 	}
