@@ -10,7 +10,7 @@ import knetwork.message.messages.RegistrationRequest;
 import knetwork.message.messages.RegistrationResponse;
 
 public abstract class MessageFactory {
-	protected abstract Message buildMessageBody(DatagramPacket packet, int intMessageType, MessageBody body);
+	protected abstract Message buildMessage(DatagramPacket packet, int intMessageType, MessageBody body);
 	
 	private Message defaultBuildMessageBody(DatagramPacket packet, int messageType, MessageBody body) {
 		// If larger, then it's a user defined message type
@@ -40,7 +40,7 @@ public abstract class MessageFactory {
 		
 		MessageBody body = new MessageBody(packet);
 		
-		Message message = buildMessageBody(packet, header.getMessageType(), body);
+		Message message = buildMessage(packet, header.getMessageType(), body);
 		
 		// If the user defined message factory fails to build a message, use the default
 		if (message == null) {

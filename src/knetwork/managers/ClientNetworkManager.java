@@ -84,6 +84,10 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 		outAcknowledgements.put(message.getMessageId(), message);
 	}
 	
+	public int getClientId() {
+		return clientId;
+	}
+	
 	@Override
 	public void disconnect() {
 		super.disconnect();

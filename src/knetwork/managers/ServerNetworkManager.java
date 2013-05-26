@@ -44,9 +44,9 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 			socket = new DatagramSocket(port);
 			acquireSocketSuccessful = true;
 		} catch (BindException e) {
-			Logger.log("[ServerNetworkManager] " + e.toString());
+			Logger.error("[ServerNetworkManager] " + e.toString());
 		} catch (SocketException e) {
-			Logger.log("[ServerNetworkManager] " + e.toString());
+			Logger.error("[ServerNetworkManager] " + e.toString());
 		}
 		
 		if (!acquireSocketSuccessful) {

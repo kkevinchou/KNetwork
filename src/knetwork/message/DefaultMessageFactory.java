@@ -7,7 +7,7 @@ import knetwork.message.messages.Message;
 public class DefaultMessageFactory extends MessageFactory {
 
 	@Override
-	protected Message buildMessageBody(DatagramPacket packet,
+	protected Message buildMessage(DatagramPacket packet,
 			int intMessageType, MessageBody body) {
 		return null;
 	}

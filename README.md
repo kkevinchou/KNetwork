@@ -16,12 +16,9 @@ Features
 	
 Usage
 --------
-
-Include the packages to your java project
 	
 ### 1.0 Define Your Message Type ###
 	
-Message types are at it's lowest level an integer.
 User defined message types should be defined starting from 10 to INTEGER.MAX
 	
 ### 2.0 Define Your Message ###
@@ -32,13 +29,15 @@ User defined message types should be defined starting from 10 to INTEGER.MAX
 	
 ### 3.0 Define Your Message Factory ###
 
+When a message is received, the network manager will use your message factory to convert the message (in bytes) into the actual message object
+
 1. Subclass the MessageFactory class to specify how you wish to reconstruct messages received over the network
-2. Override the buildMessageBody() method to control the message reconstruction process
+2. buildMessage() is the factory method which initiates the message construction process
 3. The arguments provided are:
 	* The received packet (DatagramPacket)
 	* The message type (Integer)
 	* The message body (MessageBody)
-4. The message body contains a ByteBuffer which can be used to extract different dataTypes
+4. The message body contains a ByteBuffer which can be used to extract different fields you serialized
 5. The data you receive will again depend on how you serialized your message in generateMessageBodyBytes()
 6. If your MessageFactory fails to construct a message, it uses the default MessageFactory to try and construct a message.  This will occur for example, when receving the registration, registration response, or acknowlegement message
 
@@ -60,3 +59,6 @@ TODO
 
 * Ensure message ordering for reliable messages
 * Handling registration requests/responses being dropped
+* Clean up the buffer = buffer.* code
+* Hooks or some method of handling player disconnection (use heartbeat)
+* Termination message

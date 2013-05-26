@@ -9,7 +9,7 @@ import knetwork.message.messages.Message;
 
 public class TestMessageFactory extends MessageFactory {
 	@Override
-	protected Message buildMessageBody(DatagramPacket packet, int intMessageType, MessageBody body) {
+	protected Message buildMessage(DatagramPacket packet, int intMessageType, MessageBody body) {
 		Message message = null;
 		
 		if (intMessageType == TestMessage.MESSAGE_TYPE) {
