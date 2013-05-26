@@ -6,6 +6,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -35,6 +36,10 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	public void setMessageFactory(MessageFactory messageFactory) {
 		this.messageFactory = messageFactory;
 		receiveThread.setMessageFactory(messageFactory);
+	}
+	
+	public Set<Integer> getClientIds() {
+		return sendThreads.keySet();
 	}
 	
 	public boolean waitForRegistrations(int port, int numRegistrations) {
