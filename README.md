@@ -60,4 +60,6 @@ TODO
 * Ensure message ordering for reliable messages
 * Hooks or some method of handling player disconnection (use heartbeat)
 * Termination message
-* Put registration process in a new thread so user's don't block
+* Implement some other mechanism for registration timeouts
+	* Put registration process in a new thread so users don't block
+	* User should have more control over how many times to atttempt
