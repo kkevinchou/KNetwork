@@ -46,16 +46,28 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 			receiveThread.start();
 			
 			Message message = null;
-
-			do {
+			
+			int connectionAttempts = 0;
+			
+			while (connectionAttempts < Constants.MAX_RETRY_CONNECTION_ATTEMPTS) {
 				message = recv_timeout(Constants.CLIENT_REGISTRATION_TIMEOUT);
-			} while (!(message instanceof RegistrationResponse));
+				
+				if (message == null) {
+					Utility.log("[ClientNetworkManager] Registration timeout");
+					connectionAttempts++;
+					continue;
+				} else if (!(message instanceof RegistrationResponse)) {
+					continue;
+				}
+				
+				registerSuccess = true;
+			}
 			
-			RegistrationResponse regResponse = (RegistrationResponse)message;
-			clientId = regResponse.getRegisteredClientId();
-			
-			Utility.log("[ClientNetworkManager] Registered with clientId = " + clientId);
-			registerSuccess = true;
+			if (registerSuccess) {
+				RegistrationResponse regResponse = (RegistrationResponse)message;
+				clientId = regResponse.getRegisteredClientId();
+				Utility.log("[ClientNetworkManager] Registered with clientId = " + clientId);
+			}
 		} catch (Exception e) {
 			Utility.error("[ClientNetworkManager] " + e.toString());
 		}

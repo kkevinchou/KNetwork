@@ -58,7 +58,6 @@ TODO
 --------
 
 * Ensure message ordering for reliable messages
-* Handling registration requests/responses being dropped
-* Registration timeouts
 * Hooks or some method of handling player disconnection (use heartbeat)
 * Termination message
+* Put registration process in a new thread so user's don't block

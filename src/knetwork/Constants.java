@@ -14,5 +14,7 @@ public class Constants {
 	public static final int PROTOCOL_ID = 19900302;
 	
 	public static final int MAX_RESERVED_MESSAGE_TYPE = 9;
-	public static final int CLIENT_REGISTRATION_TIMEOUT = 5 * 1000;
+	public static final int CLIENT_REGISTRATION_TIMEOUT = 4 * 1000;
+	
+	public static final int MAX_RETRY_CONNECTION_ATTEMPTS = 2;
 }
