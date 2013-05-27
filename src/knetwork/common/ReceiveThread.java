@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
-import kcommon.Utility;
+import kcommon.Util;
 import knetwork.Constants;
 import knetwork.managers.BaseNetworkingManager;
 import knetwork.message.*;
@@ -61,7 +61,7 @@ public class ReceiveThread extends Thread {
 			if (message instanceof AckMessage) {
 				AckMessage ackMessage = (AckMessage)message;
 				inAcknowledgements.add(ackMessage);
-				Utility.log("    === RECEIVE ACK for message " + ackMessage.getAckMsgId());
+				Util.log("    === RECEIVE ACK for message " + ackMessage.getAckMsgId());
 				continue;
 			}
 			
@@ -89,7 +89,7 @@ public class ReceiveThread extends Thread {
 			
 			if (messageOkay) {
 				inMessages.add(message);
-				Utility.log("    === RECEIVE [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [TYPE: " + header.getMessageType() + "] [SIZE: " + packet.getLength() + "]");
+				Util.log("    === RECEIVE [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [TYPE: " + header.getMessageType() + "] [SIZE: " + packet.getLength() + "]");
 			}
 		}
 	}
@@ -105,11 +105,11 @@ public class ReceiveThread extends Thread {
 		try {
 			main();
 		} catch (SocketException e) {
-			Utility.error("[Receive Thread] " + e.toString());
+			Util.error("[Receive Thread] " + e.toString());
 		} catch (IOException e) {
-			Utility.error("[Receive Thread] " + e.toString());
+			Util.error("[Receive Thread] " + e.toString());
 		} catch (Exception e) {
-			Utility.error("[Receive Thread] " + e.toString());
+			Util.error("[Receive Thread] " + e.toString());
 		}
 	}
 }

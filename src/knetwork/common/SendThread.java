@@ -8,7 +8,7 @@ import java.net.SocketException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import kcommon.Utility;
+import kcommon.Util;
 import knetwork.Constants;
 import knetwork.message.messages.AckMessage;
 import knetwork.message.messages.Message;
@@ -37,9 +37,9 @@ public class SendThread extends Thread {
 			byte[] data = message.convertMessageToBytes();
 			
 			if (message instanceof AckMessage) {
-				Utility.log("    ---    SEND ACK for message " + ((AckMessage)message).getAckMsgId());
+				Util.log("    ---    SEND ACK for message " + ((AckMessage)message).getAckMsgId());
 			} else {
-				Utility.log("    ---    SEND [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [TYPE: " + message.getMessageType() + "] [SIZE: " + data.length + "]");
+				Util.log("    ---    SEND [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [TYPE: " + message.getMessageType() + "] [SIZE: " + data.length + "]");
 			}
 	        
 	        DatagramPacket packet = new DatagramPacket(data, data.length, destinationAddress, destinationPort);
@@ -64,7 +64,7 @@ public class SendThread extends Thread {
 		} catch (InterruptedException e) {
 //			Utility.log("[Send Thread] " + e.toString());
 		} catch (IOException e) {
-			Utility.log("[Send Thread] " + e.toString());
+			Util.log("[Send Thread] " + e.toString());
 		}
 	}
 }

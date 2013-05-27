@@ -2,7 +2,7 @@ package knetwork.managers;
 
 import java.net.DatagramSocket;
 
-import kcommon.Utility;
+import kcommon.Util;
 import knetwork.Constants;
 import knetwork.common.ReceiveThread;
 import knetwork.common.SendThread;
@@ -53,7 +53,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 				message = recv_timeout(Constants.CLIENT_REGISTRATION_TIMEOUT);
 				
 				if (message == null) {
-					Utility.log("[ClientNetworkManager] Registration timeout");
+					Util.log("[ClientNetworkManager] Registration timeout");
 					connectionAttempts++;
 					continue;
 				} else if (!(message instanceof RegistrationResponse)) {
@@ -66,10 +66,10 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 			if (registerSuccess) {
 				RegistrationResponse regResponse = (RegistrationResponse)message;
 				clientId = regResponse.getRegisteredClientId();
-				Utility.log("[ClientNetworkManager] Registered with clientId = " + clientId);
+				Util.log("[ClientNetworkManager] Registered with clientId = " + clientId);
 			}
 		} catch (Exception e) {
-			Utility.error("[ClientNetworkManager] " + e.toString());
+			Util.error("[ClientNetworkManager] " + e.toString());
 		}
 		
 		if (!registerSuccess) {
@@ -109,7 +109,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 			receiveThread.join();
 			sendThread.join();
 		} catch (InterruptedException e) {
-			Utility.error("[ClientNetworkManager] " + e.toString());
+			Util.error("[ClientNetworkManager] " + e.toString());
 		}
 		
 		socket.close();
