@@ -10,9 +10,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import kcommon.Utility;
 import knetwork.Constants;
-import knetwork.common.BaseNetworkingManager;
-import knetwork.common.Logger;
 import knetwork.common.ReceiveThread;
 import knetwork.common.SendThread;
 import knetwork.message.*;
@@ -49,9 +48,9 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 			socket = new DatagramSocket(port);
 			acquireSocketSuccessful = true;
 		} catch (BindException e) {
-			Logger.error("[ServerNetworkManager] " + e.toString());
+			Utility.error("[ServerNetworkManager] " + e.toString());
 		} catch (SocketException e) {
-			Logger.error("[ServerNetworkManager] " + e.toString());
+			Utility.error("[ServerNetworkManager] " + e.toString());
 		}
 		
 		if (!acquireSocketSuccessful) {
@@ -73,9 +72,9 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 			try {
 				success = registerUser(nextClientId);
 			} catch (IOException e) {
-				Logger.log("[ServerNetworkManager] " + e.toString());
+				Utility.log("[ServerNetworkManager] " + e.toString());
 			} catch (InterruptedException e) {
-				Logger.log("[ServerNetworkManager] " + e.toString());
+				Utility.log("[ServerNetworkManager] " + e.toString());
 			}
 			
 			if (success) {
@@ -106,7 +105,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		send(new RegistrationResponse(clientId));
 		
 		InetAddress clientAddress = InetAddress.getByName(clientIp);
-		Logger.log("[ServerNetworkManager] Registered User - " + clientAddress + " " + clientPort);
+		Utility.log("[ServerNetworkManager] Registered User - " + clientAddress + " " + clientPort);
         
         return true;
 	}
@@ -161,7 +160,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		try {
 			receiveThread.join();
 		} catch (InterruptedException e) {
-			Logger.log("[ServerNetworkManager] " + e.toString());
+			Utility.log("[ServerNetworkManager] " + e.toString());
 		}
 
 		if (sendThreads != null) {
@@ -175,7 +174,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 				try {
 					sendThread.join();
 				} catch (InterruptedException e) {
-					Logger.log("[ServerNetworkManager] " + e.toString());
+					Utility.log("[ServerNetworkManager] " + e.toString());
 				}
 			}
 		}

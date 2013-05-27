@@ -3,7 +3,6 @@ package knetwork.message;
 import java.net.DatagramPacket;
 
 import knetwork.Constants;
-import knetwork.common.Logger;
 import knetwork.message.messages.AckMessage;
 import knetwork.message.messages.Message;
 import knetwork.message.messages.RegistrationRequest;

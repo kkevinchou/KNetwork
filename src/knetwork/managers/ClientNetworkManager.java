@@ -2,9 +2,8 @@ package knetwork.managers;
 
 import java.net.DatagramSocket;
 
+import kcommon.Utility;
 import knetwork.Constants;
-import knetwork.common.BaseNetworkingManager;
-import knetwork.common.Logger;
 import knetwork.common.ReceiveThread;
 import knetwork.common.SendThread;
 import knetwork.message.*;
@@ -49,16 +48,16 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 			Message message = null;
 
 			do {
-				message = recv_blocking();
+				message = recv_timeout(Constants.CLIENT_REGISTRATION_TIMEOUT);
 			} while (!(message instanceof RegistrationResponse));
 			
 			RegistrationResponse regResponse = (RegistrationResponse)message;
 			clientId = regResponse.getRegisteredClientId();
 			
-			Logger.log("[ClientNetworkManager] Registered with clientId = " + clientId);
+			Utility.log("[ClientNetworkManager] Registered with clientId = " + clientId);
 			registerSuccess = true;
 		} catch (Exception e) {
-			Logger.error("[ClientNetworkManager] " + e.toString());
+			Utility.error("[ClientNetworkManager] " + e.toString());
 		}
 		
 		if (!registerSuccess) {
@@ -98,7 +97,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 			receiveThread.join();
 			sendThread.join();
 		} catch (InterruptedException e) {
-			Logger.error("[ClientNetworkManager] " + e.toString());
+			Utility.error("[ClientNetworkManager] " + e.toString());
 		}
 		
 		socket.close();

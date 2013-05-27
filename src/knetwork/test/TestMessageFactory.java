@@ -2,7 +2,6 @@ package knetwork.test;
 
 import java.net.DatagramPacket;
 
-import knetwork.common.Logger;
 import knetwork.message.MessageBody;
 import knetwork.message.MessageFactory;
 import knetwork.message.messages.Message;

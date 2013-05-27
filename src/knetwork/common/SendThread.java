@@ -8,6 +8,7 @@ import java.net.SocketException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import kcommon.Utility;
 import knetwork.Constants;
 import knetwork.message.messages.AckMessage;
 import knetwork.message.messages.Message;
@@ -36,9 +37,9 @@ public class SendThread extends Thread {
 			byte[] data = message.convertMessageToBytes();
 			
 			if (message instanceof AckMessage) {
-				Logger.log("    ---    SEND ACK for message " + ((AckMessage)message).getAckMsgId());
+				Utility.log("    ---    SEND ACK for message " + ((AckMessage)message).getAckMsgId());
 			} else {
-				Logger.log("    ---    SEND [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [TYPE: " + message.getMessageType() + "] [SIZE: " + data.length + "]");
+				Utility.log("    ---    SEND [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [TYPE: " + message.getMessageType() + "] [SIZE: " + data.length + "]");
 			}
 	        
 	        DatagramPacket packet = new DatagramPacket(data, data.length, destinationAddress, destinationPort);
@@ -59,11 +60,11 @@ public class SendThread extends Thread {
 		try {
 			main();
 		} catch (SocketException e) {
-//			Helper.log("[Send Thread] " + e.toString());
+//			Utility.log("[Send Thread] " + e.toString());
 		} catch (InterruptedException e) {
-//			Helper.log("[Send Thread] " + e.toString());
+//			Utility.log("[Send Thread] " + e.toString());
 		} catch (IOException e) {
-			Logger.log("[Send Thread] " + e.toString());
+			Utility.log("[Send Thread] " + e.toString());
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package knetwork.common;
+package knetwork.managers;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -7,6 +7,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import knetwork.Constants;
 import knetwork.message.messages.AckMessage;
@@ -45,6 +46,17 @@ public abstract class BaseNetworkingManager {
 
 	public Message recv() {
 		Message message = inMessages.poll();
+		return message;
+	}
+	
+	public Message recv_timeout(long timeoutInMilliSeconds) {
+		Message message = null;
+		
+		try {
+			message = inMessages.poll(timeoutInMilliSeconds, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+		}
+		
 		return message;
 	}
 	
