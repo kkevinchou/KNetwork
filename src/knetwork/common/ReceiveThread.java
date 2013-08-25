@@ -14,8 +14,7 @@ import knetwork.Util;
 import knetwork.Constants;
 import knetwork.managers.BaseNetworkingManager;
 import knetwork.message.*;
-import knetwork.message.messages.AckMessage;
-import knetwork.message.messages.Message;
+import knetwork.message.messages.*;
 
 public class ReceiveThread extends Thread {
 	private BlockingQueue<Message> inMessages;
@@ -27,11 +26,11 @@ public class ReceiveThread extends Thread {
 	private BaseNetworkingManager netManager;
 	private MessageFactory messageFactory;
 
-	public ReceiveThread(BaseNetworkingManager netManager, MessageFactory messageFactory, BlockingQueue<Message> inMessages, BlockingQueue<AckMessage> inAcknowledgements) {
+	public ReceiveThread(BaseNetworkingManager netManager, BlockingQueue<Message> inMessages, BlockingQueue<AckMessage> inAcknowledgements) {
 		this.netManager = netManager;
 		this.inMessages = inMessages;
 		this.inAcknowledgements = inAcknowledgements;
-		this.messageFactory = messageFactory;
+		this.messageFactory = new DefaultMessageFactory();
 
 		reliablyReceivedMessages = new HashSet<String>();
 		senderSequenceNumbers = new HashMap<Integer, Integer>();
@@ -70,8 +69,7 @@ public class ReceiveThread extends Thread {
 	        int seqNumber = message.getSeqNumber();
 	        Integer prevSeqNumber = senderSequenceNumbers.get(senderId);
 
-	        if (senderId == Constants.UNASSIGNED_CLIENT_ID) {
-	        	// Client is registering for the first time, so they have no senderId
+	        if (senderId == Constants.UNASSIGNED_ID && message instanceof RegistrationRequest) {
 	        	messageOkay = true;
 	        } else if (message.isReliable() && !reliablyReceivedMessages.contains(message.hashKey())) {
 				// Process the message only if we've never received it before

@@ -105,10 +105,6 @@ public class ServerNetworkManager extends BaseNetworkingManager {
         return true;
 	}
 
-	public void sendMessageAcknowledgement(Message m) {
-		send(new AckMessage(m));
-	}
-
 	public void send_reliable(int clientId, Message message) {
 		message.setReceiverId(clientId);
 		send_reliable(message);
@@ -125,20 +121,24 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		send(message);
 	}
 
-	public void broadcast(Message message) {
-		for (Integer clientId : sendThreads.keySet()) {
-			send(clientId, message);
-		}
-	}
-
 	public void send(Message m) {
 		if (m.getReceiverId() == Constants.SERVER_ID) {
 			System.out.println("WARNING - SENDING MESSAGE FROM SERVER TO SERVER");
 		}
 
+		if (m.getReceiverId() == Constants.UNASSIGNED_ID) {
+			System.out.println("WARNING - SENDING MESSAGE TO AN UNASSIGNED CLIENT ID");
+		}
+
 		m.setSenderId(Constants.SERVER_ID);
 		SendThread sendThread = sendThreads.get(m.getReceiverId());
 		sendThread.queueMessage(m);
+	}
+
+	public void broadcast(Message message) {
+		for (Integer clientId : sendThreads.keySet()) {
+			send(clientId, message);
+		}
 	}
 
 	public void broadcast_reliable(Message message) {
@@ -176,7 +176,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	}
 
 	@Override
-	protected void reSendReliableMessage(Message message) {
-		send(message);
+	public void sendMessageAcknowledgement(Message m) {
+		send(new AckMessage(m));
 	}
 }

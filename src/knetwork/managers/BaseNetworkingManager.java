@@ -22,13 +22,14 @@ public abstract class BaseNetworkingManager {
 	protected BlockingQueue<AckMessage> inAcknowledgements;
 	protected Map<Integer, Message> outAcknowledgements;
 	protected ReceiveThread receiveThread;
+
 	private Timer ackTimer;
 
 	protected BaseNetworkingManager(int inQueueSize) {
 		inMessages = new ArrayBlockingQueue<Message>(inQueueSize);
 		inAcknowledgements = new ArrayBlockingQueue<AckMessage>(inQueueSize);
 		outAcknowledgements = new HashMap<Integer, Message>();
-		receiveThread = new ReceiveThread(this, new DefaultMessageFactory(), inMessages, inAcknowledgements);
+		receiveThread = new ReceiveThread(this, inMessages, inAcknowledgements);
 
 		ackTimer = new Timer();
 		ackTimer.scheduleAtFixedRate(new TimerTask() {
@@ -41,14 +42,17 @@ public abstract class BaseNetworkingManager {
 				  }
 
 				  for (Message m : outAcknowledgements.values()) {
-					  reSendReliableMessage(m);
+					  send(m);
 				  }
 			  }
 		}, 1, Constants.ACKNOWLEDGEMENT_TIMEOUT);
 	}
 
-	protected abstract void reSendReliableMessage(Message m);
-	public abstract void sendMessageAcknowledgement(Message m);
+	public abstract void send(Message m);
+
+	public void sendMessageAcknowledgement(Message m) {
+		send(m);
+	}
 
 	public Message recv() {
 		Message message = inMessages.poll();

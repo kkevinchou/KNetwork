@@ -12,7 +12,6 @@ import knetwork.message.messages.Message;
 import knetwork.message.messages.RegistrationRequest;
 import knetwork.message.messages.RegistrationResponse;
 
-
 public class ClientNetworkManager extends BaseNetworkingManager {
 	private DatagramSocket socket;
 	private SendThread sendThread;
@@ -74,10 +73,6 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 		return registerSuccess;
 	}
 
-	public void sendMessageAcknowledgement(Message m) {
-		send(new AckMessage(m));
-	}
-
 	public void send(Message message) {
 		message.setSenderId(clientId);
 		message.setReceiverId(Constants.SERVER_ID);
@@ -110,7 +105,8 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 		socket.close();
 	}
 
-	protected void reSendReliableMessage(Message message) {
-		send(message);
+	@Override
+	public void sendMessageAcknowledgement(Message m) {
+		send(new AckMessage(m));
 	}
 }
