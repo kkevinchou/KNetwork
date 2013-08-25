@@ -114,14 +114,9 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		send(new AckMessage(m));
 	}
 
-	public void send(Message m) {
-		if (m.getReceiverId() == Constants.SERVER_ID) {
-			System.out.println("WARNING - SENDING MESSAGE FROM SERVER TO SERVER");
-		}
-
-		m.setSenderId(Constants.SERVER_ID);
-		SendThread sendThread = sendThreads.get(m.getReceiverId());
-		sendThread.queueMessage(m);
+	public void send_reliable(int clientId, Message message) {
+		message.setReceiverId(clientId);
+		send_reliable(message);
 	}
 
 	public void send_reliable(Message message) {
@@ -135,15 +130,20 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		send(message);
 	}
 
-	public void send_reliable(int clientId, Message message) {
-		message.setReceiverId(clientId);
-		send_reliable(message);
-	}
-
 	public void broadcast(Message message) {
 		for (Integer clientId : sendThreads.keySet()) {
 			send(clientId, message);
 		}
+	}
+
+	public void send(Message m) {
+		if (m.getReceiverId() == Constants.SERVER_ID) {
+			System.out.println("WARNING - SENDING MESSAGE FROM SERVER TO SERVER");
+		}
+
+		m.setSenderId(Constants.SERVER_ID);
+		SendThread sendThread = sendThreads.get(m.getReceiverId());
+		sendThread.queueMessage(m);
 	}
 
 	public void broadcast_reliable(Message message) {
@@ -180,6 +180,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		}
 	}
 
+	@Override
 	protected void reSendReliableMessage(Message message) {
 		send(message);
 	}
