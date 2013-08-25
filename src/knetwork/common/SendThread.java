@@ -8,7 +8,7 @@ import java.net.SocketException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import kcommon.Util;
+import knetwork.Util;
 import knetwork.Constants;
 import knetwork.message.messages.AckMessage;
 import knetwork.message.messages.Message;
@@ -20,42 +20,42 @@ public class SendThread extends Thread {
 	private String destinationIp;
 	private int destinationPort;
 	private DatagramSocket localSocket;
-	
+
 	public SendThread(String destinationIp, int destinationPort, DatagramSocket localSocket) {
 		outMessages = new ArrayBlockingQueue<Message>(Constants.SEND_THREAD_QUEUE_SIZE);
-		
+
 		this.destinationIp = destinationIp;
 		this.destinationPort = destinationPort;
 		this.localSocket = localSocket;
 	}
-	
+
 	private void main() throws IOException, InterruptedException {
 		InetAddress destinationAddress = InetAddress.getByName(destinationIp);
-        
+
 		while (true) {
 			Message message = outMessages.take();
 			byte[] data = message.convertMessageToBytes();
-			
+
 			if (message instanceof AckMessage) {
 				Util.log("    ---    SEND ACK for message " + ((AckMessage)message).getAckMsgId());
 			} else {
 				Util.log("    ---    SEND [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [TYPE: " + message.getMessageType() + "] [SIZE: " + data.length + "]");
 			}
-	        
+
 	        DatagramPacket packet = new DatagramPacket(data, data.length, destinationAddress, destinationPort);
 	        localSocket.send(packet);
 		}
 	}
-	
+
 	public void interrupt() {
 		super.interrupt();
 	    localSocket.close();
 	}
-	
+
 	public void queueMessage(Message m) {
 		outMessages.add(m);
 	}
-	
+
 	public void run() {
 		try {
 			main();

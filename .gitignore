@@ -3,9 +3,6 @@ c
 r
 server.jar
 client.jar
-build.xml
 .classpath
 .project
-TODO.txt
-src/ClientMain.java
-src/ServerMain.java
+.gitignore

@@ -1,0 +1,67 @@
+<project name="BigBeaver" default="all" basedir=".">
+
+	<description>
+        Ant build file for BigBeaver. How to use:
+        	- To build both client and server: ant
+        	- To build just the client: ant client
+        	- To build just the server: ant server
+    </description>
+
+	<!-- Load ant contrib jar -->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="${basedir}/lib/ant/ant-contrib-1.0b3.jar"/>
+		</classpath>
+	</taskdef>
+
+	<path id="compile.classpath">
+		<fileset dir="${basedir}/lib/jars">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="all" depends="common, client, server">
+	</target>
+
+	<target name="client" depends="clean">
+		<!-- TODO: javac, jar -->
+	</target>
+
+	<target name="server" depends="clean, server-compile, server-jar">
+		<!-- TODO: javac, jar -->
+	</target>
+
+	<target name="server-compile">
+		<if>
+			<available file="build" />
+			<else>
+				<mkdir dir="build" />
+			</else>
+		</if>
+
+		<javac srcdir="src" destdir="build" includeAntRuntime="false" source="1.6" debug="on">
+			<classpath refid="compile.classpath" />
+		</javac>
+	</target>
+
+	<target name="server-jar">
+		<manifestclasspath property="jar.classpath" jarfile="server.jar">
+			<classpath refid="compile.classpath" />
+		</manifestclasspath>
+		<jar destfile="server.jar" basedir="build">
+			<manifest>
+				<attribute name="Main-Class" value="knetwork.server.ServerMain" />
+				<attribute name="Class-Path" value="${jar.classpath}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="common">
+	</target>
+
+	<target name="clean" description="Remove all old build output files">
+		<delete file="server.jar"/>
+		<delete dir="build"/>
+	</target>
+
+</project>

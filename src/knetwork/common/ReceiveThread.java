@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
-import kcommon.Util;
+import knetwork.Util;
 import knetwork.Constants;
 import knetwork.managers.BaseNetworkingManager;
 import knetwork.message.*;
@@ -22,54 +22,54 @@ public class ReceiveThread extends Thread {
 	private BlockingQueue<AckMessage> inAcknowledgements;
 	private Map<Integer, Integer> senderSequenceNumbers;
 	private Set<String> reliablyReceivedMessages;
-	
+
 	private DatagramSocket localSocket;
 	private BaseNetworkingManager netManager;
 	private MessageFactory messageFactory;
-	
+
 	public ReceiveThread(BaseNetworkingManager netManager, MessageFactory messageFactory, BlockingQueue<Message> inMessages, BlockingQueue<AckMessage> inAcknowledgements) {
 		this.netManager = netManager;
 		this.inMessages = inMessages;
 		this.inAcknowledgements = inAcknowledgements;
 		this.messageFactory = messageFactory;
-		
+
 		reliablyReceivedMessages = new HashSet<String>();
 		senderSequenceNumbers = new HashMap<Integer, Integer>();
 	}
-	
+
 	public void setSocket(DatagramSocket localSocket) {
 		this.localSocket = localSocket;
 	}
-	
+
 	public void setMessageFactory(MessageFactory messageFactory) {
 		this.messageFactory = messageFactory;
 	}
-	
+
 	private void main() throws IOException {
 		while (true) {
 			byte[] data = new byte[Constants.MAX_UDP_BYTE_READ_SIZE];
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			localSocket.receive(packet);
-			
+
 			MessageHeader header = new MessageHeader(packet);
 			Message message = messageFactory.buildMessageFromPacket(packet);
-			
+
 			if (message == null) {
 				continue;
 			}
-			
+
 			if (message instanceof AckMessage) {
 				AckMessage ackMessage = (AckMessage)message;
 				inAcknowledgements.add(ackMessage);
 				Util.log("    === RECEIVE ACK for message " + ackMessage.getAckMsgId());
 				continue;
 			}
-			
+
 	        boolean messageOkay = false;
 			int senderId = message.getSenderId();
 	        int seqNumber = message.getSeqNumber();
 	        Integer prevSeqNumber = senderSequenceNumbers.get(senderId);
-	        
+
 	        if (senderId == Constants.UNASSIGNED_CLIENT_ID) {
 	        	// Client is registering for the first time, so they have no senderId
 	        	messageOkay = true;
@@ -86,21 +86,21 @@ public class ReceiveThread extends Thread {
 			        senderSequenceNumbers.put(senderId, seqNumber);
 				}
 			}
-			
+
 			if (messageOkay) {
 				inMessages.add(message);
 				Util.log("    === RECEIVE [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [TYPE: " + header.getMessageType() + "] [SIZE: " + packet.getLength() + "]");
 			}
 		}
 	}
-	
+
 	public void interrupt() {
 		super.interrupt();
 		if (localSocket != null) {
 		    localSocket.close();
 		}
 	}
-	
+
 	public void run() {
 		try {
 			main();
