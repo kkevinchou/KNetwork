@@ -1,6 +1,7 @@
 *.class
 c
 r
+s
 server.jar
 client.jar
 .classpath
