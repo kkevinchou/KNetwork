@@ -10,6 +10,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import knetwork.Constants;
+import knetwork.Util;
 import knetwork.message.messages.AckMessage;
 import knetwork.message.messages.Message;
 
@@ -18,12 +19,12 @@ public abstract class BaseNetworkingManager {
 	protected BlockingQueue<AckMessage> inAcknowledgements;
 	protected Map<Integer, Message> outAcknowledgements;
 	private Timer ackTimer;
-	
+
 	protected BaseNetworkingManager(int inQueueSize) {
 		inMessages = new ArrayBlockingQueue<Message>(inQueueSize);
 		inAcknowledgements = new ArrayBlockingQueue<AckMessage>(inQueueSize);
 		outAcknowledgements = new HashMap<Integer, Message>();
-		
+
 		ackTimer = new Timer();
 		ackTimer.scheduleAtFixedRate(new TimerTask() {
 			  public void run() {
@@ -33,14 +34,14 @@ public abstract class BaseNetworkingManager {
 					  outAcknowledgements.remove(message.getAckMsgId());
 					  iter.remove();
 				  }
-				  
+
 				  for (Message m : outAcknowledgements.values()) {
 					  reSendReliableMessage(m);
 				  }
 			  }
 		}, 1, Constants.ACKNOWLEDGEMENT_TIMEOUT);
 	}
-	
+
 	protected abstract void reSendReliableMessage(Message m);
 	public abstract void sendMessageAcknowledgement(Message m);
 
@@ -48,29 +49,31 @@ public abstract class BaseNetworkingManager {
 		Message message = inMessages.poll();
 		return message;
 	}
-	
+
 	public Message recv_timeout(long timeoutInMilliSeconds) {
 		Message message = null;
-		
+
 		try {
 			message = inMessages.poll(timeoutInMilliSeconds, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
+			Util.error("[BaseNetworkingManager] " + e.toString());
 		}
-		
+
 		return message;
 	}
-	
+
 	public Message recv_blocking() {
 		Message message = null;
-		
+
 		try {
 			message = inMessages.take();
 		} catch (InterruptedException e) {
+			Util.error("[BaseNetworkingManager] " + e.toString());
 		}
-		
+
 		return message;
 	}
-	
+
 	public void disconnect() {
 		ackTimer.cancel();
 	}

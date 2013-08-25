@@ -88,8 +88,8 @@ public class ReceiveThread extends Thread {
 			}
 
 			if (messageOkay) {
-				inMessages.add(message);
 				Util.log("    === RECEIVE [" + message.getSenderId() + " -> " + message.getReceiverId() + "]| " + message.getMessageId() + " [TYPE: " + header.getMessageType() + "] [SIZE: " + packet.getLength() + "]");
+				inMessages.add(message);
 			}
 		}
 	}

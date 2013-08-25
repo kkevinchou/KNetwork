@@ -49,7 +49,7 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 
 			int connectionAttempts = 0;
 
-			while (connectionAttempts < Constants.MAX_RETRY_CONNECTION_ATTEMPTS) {
+			while (connectionAttempts < Constants.MAX_RETRY_CONNECTION_ATTEMPTS && !registerSuccess) {
 				message = recv_timeout(Constants.CLIENT_REGISTRATION_TIMEOUT);
 
 				if (message == null) {

@@ -1,11 +1,10 @@
-<project name="BigBeaver" default="all" basedir=".">
+<project name="KNetwork" default="server" basedir=".">
 
 	<description>
-        Ant build file for BigBeaver. How to use:
-        	- To build both client and server: ant
-        	- To build just the client: ant client
-        	- To build just the server: ant server
-    </description>
+        Ant build file for KNetwork
+			- To build the client >> ant client
+			- To build the server >> ant server
+	</description>
 
 	<!-- Load ant contrib jar -->
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
@@ -20,26 +19,34 @@
 		</fileset>
 	</path>
 
-	<target name="all" depends="common, client, server">
+	<target name="client" depends="clean-client, compile-client, client-jar">
 	</target>
 
-	<target name="client" depends="clean">
-		<!-- TODO: javac, jar -->
+	<target name="server" depends="clean-server, compile-server, server-jar">
 	</target>
 
-	<target name="server" depends="clean, server-compile, server-jar">
-		<!-- TODO: javac, jar -->
-	</target>
-
-	<target name="server-compile">
+	<target name="compile-server">
 		<if>
-			<available file="build" />
+			<available file="server_build" />
 			<else>
-				<mkdir dir="build" />
+				<mkdir dir="server_build" />
 			</else>
 		</if>
 
-		<javac srcdir="src" destdir="build" includeAntRuntime="false" source="1.6" debug="on">
+		<javac srcdir="src" destdir="server_build" includeAntRuntime="false" source="1.6" debug="on">
+			<classpath refid="compile.classpath" />
+		</javac>
+	</target>
+
+	<target name="compile-client">
+		<if>
+			<available file="client_build" />
+			<else>
+				<mkdir dir="client_build" />
+			</else>
+		</if>
+
+		<javac srcdir="src" destdir="client_build" includeAntRuntime="false" source="1.6" debug="on">
 			<classpath refid="compile.classpath" />
 		</javac>
 	</target>
@@ -48,9 +55,21 @@
 		<manifestclasspath property="jar.classpath" jarfile="server.jar">
 			<classpath refid="compile.classpath" />
 		</manifestclasspath>
-		<jar destfile="server.jar" basedir="build">
+		<jar destfile="server.jar" basedir="server_build">
 			<manifest>
-				<attribute name="Main-Class" value="knetwork.server.ServerMain" />
+				<attribute name="Main-Class" value="ServerMain" />
+				<attribute name="Class-Path" value="${jar.classpath}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="client-jar">
+		<manifestclasspath property="jar.classpath" jarfile="client.jar">
+			<classpath refid="compile.classpath" />
+		</manifestclasspath>
+		<jar destfile="client.jar" basedir="client_build">
+			<manifest>
+				<attribute name="Main-Class" value="ClientMain" />
 				<attribute name="Class-Path" value="${jar.classpath}" />
 			</manifest>
 		</jar>
@@ -59,9 +78,14 @@
 	<target name="common">
 	</target>
 
-	<target name="clean" description="Remove all old build output files">
+	<target name="clean-server">
 		<delete file="server.jar"/>
-		<delete dir="build"/>
+		<delete dir="build-server"/>
+	</target>
+
+	<target name="clean-client">
+		<delete file="client.jar"/>
+		<delete dir="client_build"/>
 	</target>
 
 </project>
