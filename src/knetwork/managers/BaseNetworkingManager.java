@@ -13,17 +13,22 @@ import knetwork.Constants;
 import knetwork.Util;
 import knetwork.message.messages.AckMessage;
 import knetwork.message.messages.Message;
+import knetwork.message.*;
+
+import knetwork.common.ReceiveThread;
 
 public abstract class BaseNetworkingManager {
 	protected BlockingQueue<Message> inMessages;
 	protected BlockingQueue<AckMessage> inAcknowledgements;
 	protected Map<Integer, Message> outAcknowledgements;
+	protected ReceiveThread receiveThread;
 	private Timer ackTimer;
 
 	protected BaseNetworkingManager(int inQueueSize) {
 		inMessages = new ArrayBlockingQueue<Message>(inQueueSize);
 		inAcknowledgements = new ArrayBlockingQueue<AckMessage>(inQueueSize);
 		outAcknowledgements = new HashMap<Integer, Message>();
+		receiveThread = new ReceiveThread(this, new DefaultMessageFactory(), inMessages, inAcknowledgements);
 
 		ackTimer = new Timer();
 		ackTimer.scheduleAtFixedRate(new TimerTask() {

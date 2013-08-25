@@ -16,19 +16,14 @@ import knetwork.message.messages.RegistrationResponse;
 public class ClientNetworkManager extends BaseNetworkingManager {
 	private DatagramSocket socket;
 	private SendThread sendThread;
-	private ReceiveThread receiveThread;
 	private int clientId;
-	private MessageFactory messageFactory;
 
 	public ClientNetworkManager() {
 		super(Constants.CLIENT_IN_QUEUE_SIZE);
 		clientId = -1;
-		messageFactory = new DefaultMessageFactory();
-		receiveThread = new ReceiveThread(this, messageFactory, inMessages, inAcknowledgements);
 	}
 
 	public void setMessageFactory(MessageFactory messageFactory) {
-		this.messageFactory = messageFactory;
 		receiveThread.setMessageFactory(messageFactory);
 	}
 

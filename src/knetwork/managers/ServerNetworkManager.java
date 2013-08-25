@@ -22,18 +22,13 @@ import knetwork.message.messages.RegistrationResponse;
 
 public class ServerNetworkManager extends BaseNetworkingManager {
 	private DatagramSocket socket;
-	private ReceiveThread receiveThread;
 	private ConcurrentMap<Integer, SendThread> sendThreads;
-	private MessageFactory messageFactory;
 
 	public ServerNetworkManager() {
 		super(Constants.SERVER_IN_QUEUE_SIZE);
-		messageFactory = new DefaultMessageFactory();
-		receiveThread = new ReceiveThread(this, messageFactory, inMessages, inAcknowledgements);
 	}
 
 	public void setMessageFactory(MessageFactory messageFactory) {
-		this.messageFactory = messageFactory;
 		receiveThread.setMessageFactory(messageFactory);
 	}
 

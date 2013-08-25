@@ -4,6 +4,7 @@ import knetwork.Util;
 import knetwork.managers.ClientNetworkManager;
 import knetwork.test.TestMessageFactory;
 import knetwork.test.TestMessage;
+import java.lang.Thread;
 
 public class ClientMain {
 	public static void main(String[] args) {
@@ -26,9 +27,13 @@ public class ClientMain {
 		int sendCounter = 0;
 
 		while (true) {
+			try {
+				Thread.sleep(1000);
+			} catch (Exception e) {
+			}
+
 			if (sendCounter++ < 4) {
 				clientNetworkManager.send_reliable(new TestMessage(sendCounter));
-				System.out.println("send!");
 			} else {
 				break;
 			}
