@@ -121,6 +121,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		send(message);
 	}
 
+	@Override
 	public void send(Message m) {
 		if (m.getReceiverId() == Constants.SERVER_ID) {
 			System.out.println("WARNING - SENDING MESSAGE FROM SERVER TO SERVER");
@@ -175,8 +176,8 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		}
 	}
 
-	@Override
-	public void sendMessageAcknowledgement(Message m) {
-		send(new AckMessage(m));
-	}
+	// @Override
+	// public void sendMessageAcknowledgement(Message m) {
+	// 	send(new AckMessage(m));
+	// }
 }

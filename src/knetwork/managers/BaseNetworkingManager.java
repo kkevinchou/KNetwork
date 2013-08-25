@@ -51,7 +51,7 @@ public abstract class BaseNetworkingManager {
 	public abstract void send(Message m);
 
 	public void sendMessageAcknowledgement(Message m) {
-		send(m);
+		send(new AckMessage(m));
 	}
 
 	public Message recv() {
