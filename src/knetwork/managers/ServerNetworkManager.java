@@ -97,7 +97,7 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 		sendThread.start();
 		sendThreads.put(clientId, sendThread);
 
-		send(new RegistrationResponse(clientId));
+		_send(new RegistrationResponse(clientId));
 
 		InetAddress clientAddress = InetAddress.getByName(clientIp);
 		Util.log("[ServerNetworkManager] Registered User - " + clientAddress + " " + clientPort);
@@ -106,23 +106,18 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 	}
 
 	public void send_reliable(int clientId, Message message) {
-		message.setReceiverId(clientId);
-		send_reliable(message);
-	}
-
-	public void send_reliable(Message message) {
 		message.setReliable(true);
-		send(message);
+		send(clientId, message);
 		outAcknowledgements.put(message.getMessageId(), message);
 	}
 
 	public void send(int clientId, Message message) {
 		message.setReceiverId(clientId);
-		send(message);
+		_send(message);
 	}
 
 	@Override
-	public void send(Message m) {
+	protected void _send(Message m) {
 		if (m.getReceiverId() == Constants.SERVER_ID) {
 			System.out.println("WARNING - SENDING MESSAGE FROM SERVER TO SERVER");
 		}
@@ -175,9 +170,4 @@ public class ServerNetworkManager extends BaseNetworkingManager {
 			}
 		}
 	}
-
-	// @Override
-	// public void sendMessageAcknowledgement(Message m) {
-	// 	send(new AckMessage(m));
-	// }
 }

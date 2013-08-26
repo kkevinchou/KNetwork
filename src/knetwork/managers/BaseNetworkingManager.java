@@ -42,16 +42,16 @@ public abstract class BaseNetworkingManager {
 				  }
 
 				  for (Message m : outAcknowledgements.values()) {
-					  send(m);
+					  _send(m);
 				  }
 			  }
 		}, 1, Constants.ACKNOWLEDGEMENT_TIMEOUT);
 	}
 
-	public abstract void send(Message m);
+	protected abstract void _send(Message m);
 
 	public void sendMessageAcknowledgement(Message m) {
-		send(new AckMessage(m));
+		_send(new AckMessage(m));
 	}
 
 	public Message recv() {

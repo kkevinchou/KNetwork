@@ -73,8 +73,12 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 		return registerSuccess;
 	}
 
-	@Override
 	public void send(Message message) {
+		_send(message);
+	}
+
+	@Override
+	protected void _send(Message message) {
 		message.setSenderId(clientId);
 		message.setReceiverId(Constants.SERVER_ID);
         sendThread.queueMessage(message);
@@ -105,9 +109,4 @@ public class ClientNetworkManager extends BaseNetworkingManager {
 
 		socket.close();
 	}
-
-	// @Override
-	// public void sendMessageAcknowledgement(Message m) {
-	// 	send(new AckMessage(m));
-	// }
 }

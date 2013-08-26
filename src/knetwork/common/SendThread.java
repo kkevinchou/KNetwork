@@ -60,9 +60,9 @@ public class SendThread extends Thread {
 		try {
 			main();
 		} catch (SocketException e) {
-//			Utility.log("[Send Thread] " + e.toString());
+			// Utility.log("[Send Thread] " + e.toString());
 		} catch (InterruptedException e) {
-//			Utility.log("[Send Thread] " + e.toString());
+			// Utility.log("[Send Thread] " + e.toString());
 		} catch (IOException e) {
 			Util.log("[Send Thread] " + e.toString());
 		}
